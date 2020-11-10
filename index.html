@@ -46,7 +46,7 @@
 <div class="intrude-less">
 	<header id="header" class="inner">
 		<a href="/" class="profilepic">
-			<img src="/source/assets/head.png" class="js-avatar">
+			<img src="https://user-images.githubusercontent.com/17522733/98709256-70325700-2382-11eb-9b0d-2b9860539030.png" class="js-avatar">
 		</a>
 		<hgroup>
 		  <h1 class="header-author"><a href="/"></a></h1>
@@ -57,8 +57,6 @@
 			<ul>
 			
 				<li><a href="/">home</a></li>
-	        
-				<li><a href="/categories">categories</a></li>
 	        
 				<li><a href="/archives">archives</a></li>
 	        
@@ -80,13 +78,15 @@
 		<nav class="header-nav">
 			<div class="social">
 				
-					<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
+					<a class="github" target="_blank" href="https://github.com/ogugugugugua" title="github"><i class="icon-github"></i></a>
 		        
 					<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
 		        
 					<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
 		        
 					<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+		        
+					<a class="mail" target="_blank" href="mailto:yulin.xie@etu.univ-nantes.fr" title="mail"><i class="icon-mail"></i></a>
 		        
 			</div>
 		</nav>
@@ -104,7 +104,7 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
-				<img src="/source/assets/head.png" class="js-avatar">
+				<img src="https://user-images.githubusercontent.com/17522733/98709256-70325700-2382-11eb-9b0d-2b9860539030.png" class="js-avatar">
 			</div>
 			<hgroup>
 			  <h1 class="header-author js-header-author"></h1>
@@ -118,20 +118,20 @@
 			
 				
 			
-				
-			
 			
 			
 			<nav class="header-nav">
 				<div class="social">
 					
-						<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
+						<a class="github" target="_blank" href="https://github.com/ogugugugugua" title="github"><i class="icon-github"></i></a>
 			        
 						<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
 			        
 						<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
 			        
 						<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+			        
+						<a class="mail" target="_blank" href="mailto:yulin.xie@etu.univ-nantes.fr" title="mail"><i class="icon-mail"></i></a>
 			        
 				</div>
 			</nav>
@@ -140,13 +140,11 @@
 				<ul style="width: 70%">
 				
 				
-					<li style="width: 25%"><a href="/">home</a></li>
+					<li style="width: 33.333333333333336%"><a href="/">home</a></li>
 		        
-					<li style="width: 25%"><a href="/categories">categories</a></li>
+					<li style="width: 33.333333333333336%"><a href="/archives">archives</a></li>
 		        
-					<li style="width: 25%"><a href="/archives">archives</a></li>
-		        
-					<li style="width: 25%"><a href="/tags">tags</a></li>
+					<li style="width: 33.333333333333336%"><a href="/tags">tags</a></li>
 		        
 				</ul>
 			</nav>
@@ -162,6 +160,266 @@
           </div>
           <div id="js-content" class="content-ll">
             
+  
+    <article id="post-排序算法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/01/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">排序算法</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/01/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" class="archive-article-date">
+  	<time datetime="2020-02-01T14:40:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h2><p><img src="https://user-gold-cdn.xitu.io/2018/7/23/164c596d5fb34fd3?imageslim" alt="quicksort"></p>
+<h2 id="基本思想：挖坑填数-分治法"><a href="#基本思想：挖坑填数-分治法" class="headerlink" title="基本思想：挖坑填数 + 分治法"></a>基本思想：<strong>挖坑填数 + 分治法</strong></h2><ol>
+<li>从序列中取出一个数作为基准数</li>
+<li>分区过程：将比这个数大的数全部放到它的右边，小于或等于它的数全部放到它的左边</li>
+<li>递归地对左右子序列尽心步骤2，直到各区间只有一个数</li>
+</ol>
+<hr>
+<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>我们这里有初始数组如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">i=0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">j=7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">(49)</td>
+<td align="center">38</td>
+<td align="center">65</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">13</td>
+<td align="center">27</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>对于这个算法，我们需要两个变量<code>i</code>和<code>j</code>分别代表数组的两端，这两个变量将会分别往中间靠拢。</p>
+<p>约定取当前区间的第一个元素为<code>index</code>作为参考，即<code>index = arr[i] = arr[0] = 49</code>。</p>
+<p>这时<code>i=0</code>的地方就已经挖了一个坑。我们从数组的右端开始往左遍历<code>j</code>，找出比<code>index</code>小的数<code>arr[j]</code>，填到<code>arr[i]</code>即 <code>arr[0]</code>的位置；</p>
+<p>显然当<code>j=6</code>时满足<code>arr[6]&lt;index</code>，所以按照上一行的解释<code>arr[0] = arr[i] = arr[j] = arr[6] = 27</code>，并且<code>i++</code>，数组变成：</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">i=1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">j=6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">65</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">13</td>
+<td align="center">(27)</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>这时<code>j=6</code>的地方就挖了一个坑。我们从数组的左端开始往右遍历<code>i</code>，找出比<code>index</code>大的数<code>arr[i]</code>，填到<code>arr[j]</code>即<code>arr[6]</code>的位置；</p>
+<p>显然当<code>i=2</code>的时候满足<code>arr[2]&gt;index</code>，所以按照上一行的解释<code>arr[6] = arr[j] = arr[i] = arr[2] = 65</code>，并且<code>j--</code>，数组变成：</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">i=2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">j=5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">(65)</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">13</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>这是<code>i=2</code>的地方就被挖出一个坑。</p>
+<p>再重复上面的步骤，<strong>先从后往前找，再从前往后找</strong>。</p>
+<p>从<code>j</code>开始往前找，当<code>j=5</code>时，符合条件，将<code>arr[5]</code>挖出一个坑，<code>arr[i] = arr[2]</code>的坑被填上，并且<code>i++</code>，数组变成：。</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">i=3</th>
+<th align="center">4</th>
+<th align="center">j=5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">13</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">(13)</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>从<code>i</code>开始往后找，当<code>i=3</code>时，符合条件，将<code>arr[3]</code>挖出一个坑，<code>arr[j] = arr[5]</code>的坑被填上，并且<code>j--</code>，数组变成：。</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">i=3</th>
+<th align="center">j=4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">13</td>
+<td align="center">(97)</td>
+<td align="center">76</td>
+<td align="center">97</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>从<code>j</code>开始往前找，此时<code>i==3,j==4</code>，由于要保持<code>i&lt;j</code>这个条件，所以无法再继续找到合适的元素。</p>
+<p>这时只需要把<code>index</code>填回去<code>arr[i]</code>这个坑即可：</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">13</td>
+<td align="center">index=49</td>
+<td align="center">76</td>
+<td align="center">97</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>通过上面这一轮可以看出，<code>arr[3]</code>前面的数字都小于它，<code>arr[3]</code>后面的数字都大于它。</p>
+<p>只需要对<code>arr[0...2]</code>和<code>arr[4....7]</code>这两个子区间重复上述步骤即可。</p>
+<hr>
+<h2 id="对挖坑填数进行总结"><a href="#对挖坑填数进行总结" class="headerlink" title="对挖坑填数进行总结"></a>对挖坑填数进行总结</h2><p>1．i = L; j = R; 将基准数挖出形成第一个坑 a[i]。</p>
+<p>2．j– 由后向前找比它小的数，找到后挖出此数填前一个坑 a[i] 中。</p>
+<p>3．i++ 由前向后找比它大的数，找到后也挖出此数填到前一个坑 a[j] 中。</p>
+<p>4．再重复执行 2，3 二步，直到 i==j，将基准数填入 a[i] 中。</p>
+<h2 id="实现代码："><a href="#实现代码：" class="headerlink" title="实现代码："></a>实现代码：</h2><p><a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/blob/master/code/leetcode/QuickSort/src/MySolution.java">https://github.com/ogugugugugua/Java-Notes/blob/master/code/leetcode/QuickSort/src/MySolution.java</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">排序</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/01/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
   
     <article id="post-搭建个人博客Hexo" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
