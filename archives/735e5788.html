@@ -6,24 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://blog.yulin.cool">
-  <title>Java集合之Set和List | 裕麟的blog</title>
+  <title>排序算法 | 裕麟的blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="SET1.Basic manipulations about a List add objects at specific positions">
+  <meta name="description" content="快速排序示意图">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java集合之Set和List">
-<meta property="og:url" content="https://blog.yulin.cool/2020/01/07/Java%E9%9B%86%E5%90%88%E4%B9%8BSet%E5%92%8CList/index.html">
+<meta property="og:title" content="排序算法">
+<meta property="og:url" content="https://blog.yulin.cool/archives/735e5788.html">
 <meta property="og:site_name" content="裕麟的blog">
-<meta property="og:description" content="SET1.Basic manipulations about a List add objects at specific positions">
+<meta property="og:description" content="快速排序示意图">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://user-images.githubusercontent.com/17522733/68083728-8c74ed00-fe2c-11e9-861f-61aaa9da5187.png">
-<meta property="article:published_time" content="2020-01-07T04:42:25.000Z">
-<meta property="article:modified_time" content="2020-11-10T18:09:39.975Z">
+<meta property="og:image" content="https://user-images.githubusercontent.com/17522733/98710150-90aee100-2383-11eb-854f-bb4791b5e55e.gif">
+<meta property="article:published_time" content="2020-02-01T14:40:15.000Z">
+<meta property="article:modified_time" content="2020-11-10T17:53:40.110Z">
 <meta property="article:author" content="Yulin">
-<meta property="article:tag" content="JavaSE">
-<meta property="article:tag" content="Set">
-<meta property="article:tag" content="List">
+<meta property="article:tag" content="排序算法">
+<meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/17522733/68083728-8c74ed00-fe2c-11e9-861f-61aaa9da5187.png">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/17522733/98710150-90aee100-2383-11eb-854f-bb4791b5e55e.gif">
   
     <link rel="alternative" href="/atom.xml" title="裕麟的blog" type="application/atom+xml">
   
@@ -159,72 +158,201 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Java集合之Set和List" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-排序算法" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Java集合之Set和List
+      排序算法
     </h1>
   
 
         
-        <a href="/2020/01/07/Java%E9%9B%86%E5%90%88%E4%B9%8BSet%E5%92%8CList/" class="archive-article-date">
-  	<time datetime="2020-01-07T04:42:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-07</time>
+        <a href="/archives/735e5788.html" class="archive-article-date">
+  	<time datetime="2020-02-01T14:40:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-01</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="SET"><a href="#SET" class="headerlink" title="SET"></a>SET</h1><h4 id="1-Basic-manipulations-about-a-List"><a href="#1-Basic-manipulations-about-a-List" class="headerlink" title="1.Basic manipulations about a List"></a>1.Basic manipulations about a List</h4><ul>
-<li>add objects at specific positions<a id="more"></a>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ArrayList heros = <span class="keyword">new</span> ArrayList();</span><br><span class="line">heros.add(<span class="keyword">new</span> Hero(<span class="string">&quot;a&quot;</span>));</span><br><span class="line">heros.add(<span class="keyword">new</span> Hero(<span class="string">&quot;b&quot;</span>));</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">    heros.add(<span class="keyword">new</span> Hero(<span class="string">&quot;hero &quot;</span> + i));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(heros);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在指定位置增加对象</span></span><br><span class="line">Hero specialHero = <span class="keyword">new</span> Hero(<span class="string">&quot;special hero&quot;</span>);</span><br><span class="line">heros.add(<span class="number">3</span>, specialHero);</span><br><span class="line">System.out.println(heros);</span><br></pre></td></tr></table></figure></li>
-<li>check if contains certain objects <strong>(only when the object is identical)</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//contains</span></span><br><span class="line">         System.out.println(<span class="string">&quot;contain a: &quot;</span>+heros.contains(<span class="keyword">new</span> Hero(<span class="string">&quot;a&quot;</span>)));</span><br><span class="line">         System.out.println(<span class="string">&quot;contain special: &quot;</span>+heros.contains(specialHero));</span><br></pre></td></tr></table></figure></li>
-<li>get objects of specific positions<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;<span class="comment">//get</span></span><br><span class="line">    System.out.println(heros.get(<span class="number">1</span>));</span><br><span class="line">    System.out.println(heros.get(heros.size()+<span class="number">1</span>));</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>get positions of specific objects <strong>(need to specify the object wanted, not just the same name)</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;<span class="comment">//indexof</span></span><br><span class="line">     System.out.println(<span class="string">&quot;position: &quot;</span>+heros.indexOf(specialHero));</span><br><span class="line">     System.out.println(<span class="string">&quot;position: &quot;</span>+heros.indexOf(<span class="keyword">new</span> Hero(<span class="string">&quot;a&quot;</span>)));</span><br><span class="line"> &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">     e.printStackTrace();</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></li>
-<li>remove specific objects (or objects of certain positions)<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; <span class="comment">//remove</span></span><br><span class="line">    System.out.println(heros);</span><br><span class="line">    heros.remove(<span class="number">2</span>);</span><br><span class="line">    System.out.println(heros);</span><br><span class="line">    heros.remove(specialHero);</span><br><span class="line">    System.out.println(heros);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>replace objects of specific positions<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    System.out.println(heros);</span><br><span class="line">    heros.set(<span class="number">3</span>,specialHero);</span><br><span class="line">    System.out.println(heros);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>cast an <code>ArrayList</code> to an array<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">         <span class="keyword">try</span>&#123;<span class="comment">//wrong casting</span></span><br><span class="line"><span class="comment">//             Hero[] array = (Hero[]) heros.toArray();</span></span><br><span class="line"><span class="comment">//             Hero[] array = (Hero[]) heros.toArray(new Hero[]&#123;&#125;);// wrong as well</span></span><br><span class="line">             System.out.println(array);</span><br><span class="line">         &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">             e.printStackTrace();</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">try</span>&#123;<span class="comment">//right casting</span></span><br><span class="line">             Hero array[] = (Hero[])heros.toArray(<span class="keyword">new</span> Hero[]&#123;&#125;);</span><br><span class="line">             System.out.println(<span class="string">&quot;array: &quot;</span>+array);</span><br><span class="line">         &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">             e.printStackTrace();</span><br><span class="line">         &#125;</span><br></pre></td></tr></table></figure></li>
-<li>add another <code>List</code> into present <code>List</code><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;<span class="comment">//addAll</span></span><br><span class="line">     ArrayList anotherHeros = <span class="keyword">new</span> ArrayList();</span><br><span class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">         anotherHeros.add(<span class="keyword">new</span> Hero(<span class="string">&quot;hero &quot;</span> + i*<span class="number">10</span>));</span><br><span class="line">     &#125;</span><br><span class="line">     System.out.println(anotherHeros);</span><br><span class="line">     anotherHeros.addAll(<span class="number">4</span>,heros);</span><br><span class="line">     System.out.println(anotherHeros);</span><br><span class="line"> &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">     e.printStackTrace();</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></li>
-<li>clear the List<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;<span class="comment">//clear</span></span><br><span class="line">    System.out.println(<span class="string">&quot;================&quot;</span>);</span><br><span class="line">    heros.clear();</span><br><span class="line">    System.out.println(heros);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h2><p><img src="https://user-images.githubusercontent.com/17522733/98710150-90aee100-2383-11eb-854f-bb4791b5e55e.gif" alt="quickSort"></p>
+<a id="more"></a>
 
+<h2 id="基本思想：挖坑填数-分治法"><a href="#基本思想：挖坑填数-分治法" class="headerlink" title="基本思想：挖坑填数 + 分治法"></a>基本思想：<strong>挖坑填数 + 分治法</strong></h2><ol>
+<li>从序列中取出一个数作为基准数</li>
+<li>分区过程：将比这个数大的数全部放到它的右边，小于或等于它的数全部放到它的左边</li>
+<li>递归地对左右子序列尽心步骤2，直到各区间只有一个数</li>
+</ol>
+<hr>
+<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>我们这里有初始数组如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">i=0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">j=7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">(49)</td>
+<td align="center">38</td>
+<td align="center">65</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">13</td>
+<td align="center">27</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>对于这个算法，我们需要两个变量<code>i</code>和<code>j</code>分别代表数组的两端，这两个变量将会分别往中间靠拢。</p>
+<p>约定取当前区间的第一个元素为<code>index</code>作为参考，即<code>index = arr[i] = arr[0] = 49</code>。</p>
+<p>这时<code>i=0</code>的地方就已经挖了一个坑。我们从数组的右端开始往左遍历<code>j</code>，找出比<code>index</code>小的数<code>arr[j]</code>，填到<code>arr[i]</code>即 <code>arr[0]</code>的位置；</p>
+<p>显然当<code>j=6</code>时满足<code>arr[6]&lt;index</code>，所以按照上一行的解释<code>arr[0] = arr[i] = arr[j] = arr[6] = 27</code>，并且<code>i++</code>，数组变成：</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">i=1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">j=6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">65</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">13</td>
+<td align="center">(27)</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>这时<code>j=6</code>的地方就挖了一个坑。我们从数组的左端开始往右遍历<code>i</code>，找出比<code>index</code>大的数<code>arr[i]</code>，填到<code>arr[j]</code>即<code>arr[6]</code>的位置；</p>
+<p>显然当<code>i=2</code>的时候满足<code>arr[2]&gt;index</code>，所以按照上一行的解释<code>arr[6] = arr[j] = arr[i] = arr[2] = 65</code>，并且<code>j--</code>，数组变成：</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">i=2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">j=5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">(65)</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">13</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>这是<code>i=2</code>的地方就被挖出一个坑。</p>
+<p>再重复上面的步骤，<strong>先从后往前找，再从前往后找</strong>。</p>
+<p>从<code>j</code>开始往前找，当<code>j=5</code>时，符合条件，将<code>arr[5]</code>挖出一个坑，<code>arr[i] = arr[2]</code>的坑被填上，并且<code>i++</code>，数组变成：。</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">i=3</th>
+<th align="center">4</th>
+<th align="center">j=5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">13</td>
+<td align="center">97</td>
+<td align="center">76</td>
+<td align="center">(13)</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>从<code>i</code>开始往后找，当<code>i=3</code>时，符合条件，将<code>arr[3]</code>挖出一个坑，<code>arr[j] = arr[5]</code>的坑被填上，并且<code>j--</code>，数组变成：。</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">i=3</th>
+<th align="center">j=4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">13</td>
+<td align="center">(97)</td>
+<td align="center">76</td>
+<td align="center">97</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>从<code>j</code>开始往前找，此时<code>i==3,j==4</code>，由于要保持<code>i&lt;j</code>这个条件，所以无法再继续找到合适的元素。</p>
+<p>这时只需要把<code>index</code>填回去<code>arr[i]</code>这个坑即可：</p>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">27</td>
+<td align="center">38</td>
+<td align="center">13</td>
+<td align="center">index=49</td>
+<td align="center">76</td>
+<td align="center">97</td>
+<td align="center">65</td>
+<td align="center">49</td>
+</tr>
+</tbody></table>
+<p>通过上面这一轮可以看出，<code>arr[3]</code>前面的数字都小于它，<code>arr[3]</code>后面的数字都大于它。</p>
+<p>只需要对<code>arr[0...2]</code>和<code>arr[4....7]</code>这两个子区间重复上述步骤即可。</p>
+<hr>
+<h2 id="对挖坑填数进行总结"><a href="#对挖坑填数进行总结" class="headerlink" title="对挖坑填数进行总结"></a>对挖坑填数进行总结</h2><p>1．i = L; j = R; 将基准数挖出形成第一个坑 a[i]。</p>
+<p>2．j– 由后向前找比它小的数，找到后挖出此数填前一个坑 a[i] 中。</p>
+<p>3．i++ 由前向后找比它大的数，找到后也挖出此数填到前一个坑 a[j] 中。</p>
+<p>4．再重复执行 2，3 二步，直到 i==j，将基准数填入 a[i] 中。</p>
+<h2 id="实现代码："><a href="#实现代码：" class="headerlink" title="实现代码："></a>实现代码：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySolution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(<span class="keyword">int</span>[] a, <span class="keyword">int</span> low, <span class="keyword">int</span> high)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = low, j = high;</span><br><span class="line">        <span class="keyword">if</span> (low &gt; high) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> temp = a[i];        <span class="comment">//挖坑，取当前区间的第一个数为基准</span></span><br><span class="line">        <span class="keyword">while</span> (i &lt; j) &#123;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; a[j] &gt;= temp) &#123;</span><br><span class="line">                j--;            <span class="comment">//j-- 由后向前找比它小的数</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i&lt;j)&#123;</span><br><span class="line">                a[i] = a[j];        <span class="comment">//找到后挖出此数填前一个坑 a[i] 中</span></span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; a[i] &lt; temp) &#123;</span><br><span class="line">                i++;            <span class="comment">//i++ 由前向后找比它大的数</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i&lt;j)&#123;</span><br><span class="line">                a[j] = a[i];        <span class="comment">//找到后也挖出此数填到前一个坑 a[j] 中</span></span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        a[i] = temp;</span><br><span class="line">        sort(a, low, i-<span class="number">1</span>);</span><br><span class="line">        sort(a, i+<span class="number">1</span>, high);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">quickSort</span><span class="params">(<span class="keyword">int</span>[] a)</span></span>&#123;</span><br><span class="line">        sort(a, <span class="number">0</span>, a.length - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> a[] = &#123; <span class="number">49</span>, <span class="number">38</span>, <span class="number">65</span>, <span class="number">97</span>, <span class="number">76</span>, <span class="number">13</span>, <span class="number">27</span>, <span class="number">49</span> &#125;;</span><br><span class="line">        quickSort(a);</span><br><span class="line">        System.out.println(Arrays.toString(a));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-
-</li>
-</ul>
-<h4 id="2-Generic"><a href="#2-Generic" class="headerlink" title="2.Generic"></a>2.Generic</h4><p>If we do this:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List heros = <span class="keyword">new</span> ArrayList();</span><br><span class="line">heros.add(Hero(<span class="string">&quot;a&quot;</span>));</span><br><span class="line">heros.add(Hero(<span class="string">&quot;b&quot;</span>));</span><br><span class="line">heros.add(Hero(<span class="string">&quot;c&quot;</span>));</span><br><span class="line">heros.add(Item(<span class="string">&quot;1&quot;</span>));</span><br></pre></td></tr></table></figure>
-<p>then we may encounter some problems of casting if we forget the corresponding position:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Hero h1 = (Hero) heros.get(<span class="number">1</span>);</span><br><span class="line">Hero h2 = (Hero) heros.get(<span class="number">2</span>);</span><br><span class="line"><span class="comment">//wrong if Item is not a sub-class of Hero ↓</span></span><br><span class="line"><span class="comment">//Hero h3 = (Hero) heros.get(3);</span></span><br></pre></td></tr></table></figure>
-<p>so we introduce generic:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Hero&gt; genericheros = <span class="keyword">new</span> ArrayList&lt;Hero&gt;();</span><br><span class="line">genericheros.add(<span class="keyword">new</span> Hero(<span class="string">&quot;盖伦&quot;</span>));</span><br><span class="line"><span class="comment">//如果不是Hero类型，根本就放不进去</span></span><br><span class="line"><span class="comment">//genericheros.add(new Item(&quot;冰杖&quot;));</span></span><br><span class="line"><span class="comment">//除此之外，还能存放Hero的子类</span></span><br><span class="line">genericheros.add(<span class="keyword">new</span> APHero());</span><br><span class="line"><span class="comment">//并且在取出数据的时候，不需要再进行转型了，因为里面肯定是放的Hero或者其子类</span></span><br><span class="line">Hero h = genericheros.get(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-<p>Btw, we can neglect the second parameter:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Hero&gt; genericheros1 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br></pre></td></tr></table></figure>
-<p>Therefore if we want to construct a List that can <strong>only support certain data type</strong>, we can firstly construct an interface, and let whatever we want to put in the List to <code>implements</code> this interface. Then we construct a List with the type equals the interface:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.company;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">LOL</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GHero</span> <span class="keyword">implements</span> <span class="title">LOL</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">float</span> hp;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> damage;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GHero</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="comment">// 增加一个初始化name的构造方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GHero</span><span class="params">(String name)</span> </span>&#123;<span class="keyword">this</span>.name = name;&#125;</span><br><span class="line">    <span class="comment">// 重写toString方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> name;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GItem</span> <span class="keyword">implements</span> <span class="title">LOL</span></span>&#123;</span><br><span class="line">    String name;</span><br><span class="line">    <span class="keyword">int</span> price;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GItem</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="comment">//提供一个初始化name的构造方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GItem</span><span class="params">(String name)</span></span>&#123;<span class="keyword">this</span>.name = name;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">effect</span><span class="params">()</span></span>&#123;System.out.println(<span class="string">&quot;物品使用后，可以有效果&quot;</span>);&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">generic</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line">        List&lt;LOL&gt; genericList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        genericList.add(<span class="keyword">new</span> GHero(<span class="string">&quot;a&quot;</span>));</span><br><span class="line">        genericList.add(<span class="keyword">new</span> GHero(<span class="string">&quot;b&quot;</span>));</span><br><span class="line">        genericList.add(<span class="keyword">new</span> GHero(<span class="string">&quot;c&quot;</span>));</span><br><span class="line">        genericList.add(<span class="keyword">new</span> GItem(<span class="string">&quot;1&quot;</span>));</span><br><span class="line">        genericList.add(<span class="keyword">new</span> GItem(<span class="string">&quot;2&quot;</span>));</span><br><span class="line">        String test = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="comment">// DOES NOT WORK!</span></span><br><span class="line">            <span class="comment">//genericList.add(test);</span></span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="3-Walk-through-a-list"><a href="#3-Walk-through-a-list" class="headerlink" title="3.Walk through a list"></a>3.Walk through a list</h4><ul>
-<li>avanced for loop:<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//增强型for循环</span></span><br><span class="line"><span class="keyword">for</span>(LOL l:genericList)&#123;</span><br><span class="line">    System.out.println(l);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>iterator:<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//迭代器简洁版本</span></span><br><span class="line">        <span class="keyword">for</span>(Iterator&lt;LOL&gt; iter = genericList.iterator();iter.hasNext();)&#123;</span><br><span class="line">            System.out.println(iter.next());</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用while的iterator</span></span><br><span class="line">        Iterator&lt;Hero&gt; it= heros.iterator();</span><br><span class="line">        <span class="comment">//从最开始的位置判断&quot;下一个&quot;位置是否有数据</span></span><br><span class="line">        <span class="comment">//如果有就通过next取出来，并且把指针向下移动</span></span><br><span class="line">        <span class="comment">//直到&quot;下一个&quot;位置没有数据</span></span><br><span class="line">        <span class="keyword">while</span>(it.hasNext())&#123;</span><br><span class="line">            Hero h = it.next();</span><br><span class="line">            System.out.println(h);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p><img src="https://user-images.githubusercontent.com/17522733/68083728-8c74ed00-fe2c-11e9-861f-61aaa9da5187.png" alt="806"></p>
-<h4 id="Exercise"><a href="#Exercise" class="headerlink" title="Exercise"></a>Exercise</h4><blockquote>
-<p>首先初始化一个Hero集合，里面放100个Hero对象，名称分别是从<br>hero 0<br>hero 1<br>hero 2<br>…<br>hero 99.<br>通过遍历的手段，删除掉名字编号是8的倍数的对象</p>
-</blockquote>
-<h4 id="NOTE"><a href="#NOTE" class="headerlink" title="NOTE:"></a><strong><em>NOTE:</em></strong></h4><p>If we use <code>testHero.remove(temp);</code> while reading this List, there will be an <code>java.util.ConcurrentModificationException</code> Error:<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/dolphin0520/p/3933551.html">https://www.cnblogs.com/dolphin0520/p/3933551.html</a></p>
-<p>Method1:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">        List&lt;Hero&gt; testHero = <span class="keyword">new</span> ArrayList&lt;Hero&gt;();</span><br><span class="line">        <span class="comment">// 放5个Hero进入容器</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">99</span>; i++) &#123;</span><br><span class="line">            testHero.add(<span class="keyword">new</span> Hero(<span class="string">&quot;hero name &quot;</span> + i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(Iterator&lt;Hero&gt; iterator = testHero.iterator();iterator.hasNext();)&#123;</span><br><span class="line">            Hero temp = iterator.next();</span><br><span class="line"><span class="comment">//            wrong</span></span><br><span class="line"><span class="comment">//            char index = temp.name.charAt(temp.name.length() - 1);</span></span><br><span class="line">            <span class="keyword">int</span> index = Integer.parseInt(temp.name.substring(<span class="number">10</span>));</span><br><span class="line">            <span class="keyword">if</span>(index%<span class="number">8</span>==<span class="number">0</span>)&#123;</span><br><span class="line"><span class="comment">//                testHero.remove(temp);//wrong</span></span><br><span class="line">                <span class="comment">// Exception in thread &quot;main&quot; java.util.ConcurrentModificationException</span></span><br><span class="line">                <span class="comment">//	at java.base/java.util.ArrayList$Itr.checkForComodification(ArrayList.java:1042)</span></span><br><span class="line">                <span class="comment">//	at java.base/java.util.ArrayList$Itr.next(ArrayList.java:996)</span></span><br><span class="line">                <span class="comment">//	at com.company.generic.main(generic.java:71)</span></span><br><span class="line"><span class="comment">//                https://www.cnblogs.com/dolphin0520/p/3933551.html</span></span><br><span class="line">                iterator.remove();</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(Iterator&lt;Hero&gt; iterator = testHero.iterator();iterator.hasNext();)&#123;</span><br><span class="line">            System.out.println(iterator.next());</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<p>Method2:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">        testHero.clear();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">99</span>; i++) &#123;</span><br><span class="line">            testHero.add(<span class="keyword">new</span> Hero(<span class="string">&quot;hero name &quot;</span> + i));</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(testHero);</span><br><span class="line">        List&lt;Hero&gt; deleteHero = <span class="keyword">new</span> ArrayList&lt;&gt;(); <span class="comment">//use another List to store the objects needed to be deleted</span></span><br><span class="line">        <span class="keyword">for</span>(Iterator&lt;Hero&gt; iterator = testHero.iterator();iterator.hasNext();)&#123;</span><br><span class="line">            Hero temp = iterator.next();</span><br><span class="line"><span class="comment">//            char index = temp.name.charAt(temp.name.length() - 1); //wrong</span></span><br><span class="line">            <span class="keyword">int</span> index = Integer.parseInt(temp.name.substring(<span class="number">10</span>));</span><br><span class="line">            <span class="keyword">if</span>(index%<span class="number">8</span>==<span class="number">0</span>&amp;&amp;index&gt;<span class="number">0</span>)&#123;</span><br><span class="line">                deleteHero.add(temp);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        testHero.removeAll(deleteHero);</span><br><span class="line">        System.out.println(testHero);</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Other-sets"><a href="#Other-sets" class="headerlink" title="Other sets"></a>Other sets</h4><p>To be continued…</p>
 
       
 
@@ -264,15 +392,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">排序算法</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Set</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">List</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
         		</li>
       		
 		</ul>
@@ -284,7 +408,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/JavaSE//" class="article-tag-list-link color2">JavaSE</a>
+        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
         		</li>
       		
 		</ul>
@@ -339,7 +463,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://blog.yulin.cool/2020/01/07/Java%E9%9B%86%E5%90%88%E4%B9%8BSet%E5%92%8CList/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://blog.yulin.cool/archives/735e5788.html" alt="微信分享二维码">
     </div>
 </div>
 
@@ -353,18 +477,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2020/01/13/Java%E5%BC%82%E5%B8%B8/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/archives/a14eb637.html" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Java异常
+          Java泛型
         
       </div>
     </a>
   
   
-    <a href="/2020/01/01/%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2Hexo/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">搭建个人博客Hexo</div>
+    <a href="/archives/6a7238df.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Java之IO</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -391,7 +515,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SET"><span class="toc-number">1.</span> <span class="toc-text">SET</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Basic-manipulations-about-a-List"><span class="toc-number">1.0.0.1.</span> <span class="toc-text">1.Basic manipulations about a List</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Generic"><span class="toc-number">1.0.0.2.</span> <span class="toc-text">2.Generic</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-Walk-through-a-list"><span class="toc-number">1.0.0.3.</span> <span class="toc-text">3.Walk through a list</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Exercise"><span class="toc-number">1.0.0.4.</span> <span class="toc-text">Exercise</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NOTE"><span class="toc-number">1.0.0.5.</span> <span class="toc-text">NOTE:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Other-sets"><span class="toc-number">1.0.0.6.</span> <span class="toc-text">Other sets</span></a></li></ol></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F"><span class="toc-number">1.</span> <span class="toc-text">快速排序</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="toc-number">1.1.</span> <span class="toc-text">示意图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3%EF%BC%9A%E6%8C%96%E5%9D%91%E5%A1%AB%E6%95%B0-%E5%88%86%E6%B2%BB%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">基本思想：挖坑填数 + 分治法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B"><span class="toc-number">1.3.</span> <span class="toc-text">举例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E6%8C%96%E5%9D%91%E5%A1%AB%E6%95%B0%E8%BF%9B%E8%A1%8C%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">对挖坑填数进行总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="toc-number">1.5.</span> <span class="toc-text">实现代码：</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
