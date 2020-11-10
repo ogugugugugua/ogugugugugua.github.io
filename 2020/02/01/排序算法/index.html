@@ -8,21 +8,21 @@
   <link rel="dns-prefetch" href="https://blog.yulin.cool">
   <title>排序算法 | 裕麟的blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="快速排序示意图 基本思想：挖坑填数 + 分治法 从序列中取出一个数作为基准数 分区过程：将比这个数大的数全部放到它的右边，小于或等于它的数全部放到它的左边 递归地对左右子序列尽心步骤2，直到各区间只有一个数   举例我们这里有初始数组如下    i&#x3D;0 1 2 3 4 5 6 j&#x3D;7    (49) 38 65 97 76 13 27 49   对于这个算法，我们需要两个变量i和j分别代表数组的两">
+  <meta name="description" content="快速排序示意图">
 <meta property="og:type" content="article">
 <meta property="og:title" content="排序算法">
 <meta property="og:url" content="https://blog.yulin.cool/2020/02/01/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/index.html">
 <meta property="og:site_name" content="裕麟的blog">
-<meta property="og:description" content="快速排序示意图 基本思想：挖坑填数 + 分治法 从序列中取出一个数作为基准数 分区过程：将比这个数大的数全部放到它的右边，小于或等于它的数全部放到它的左边 递归地对左右子序列尽心步骤2，直到各区间只有一个数   举例我们这里有初始数组如下    i&#x3D;0 1 2 3 4 5 6 j&#x3D;7    (49) 38 65 97 76 13 27 49   对于这个算法，我们需要两个变量i和j分别代表数组的两">
+<meta property="og:description" content="快速排序示意图">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/7/23/164c596d5fb34fd3?imageslim">
+<meta property="og:image" content="https://user-images.githubusercontent.com/17522733/98710150-90aee100-2383-11eb-854f-bb4791b5e55e.gif">
 <meta property="article:published_time" content="2020-02-01T14:40:15.000Z">
-<meta property="article:modified_time" content="2020-11-10T17:31:31.258Z">
+<meta property="article:modified_time" content="2020-11-10T17:38:34.417Z">
 <meta property="article:author" content="Yulin">
 <meta property="article:tag" content="排序">
 <meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2018/7/23/164c596d5fb34fd3?imageslim">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/17522733/98710150-90aee100-2383-11eb-854f-bb4791b5e55e.gif">
   
     <link rel="alternative" href="/atom.xml" title="裕麟的blog" type="application/atom+xml">
   
@@ -184,7 +184,9 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h2><p><img src="https://user-gold-cdn.xitu.io/2018/7/23/164c596d5fb34fd3?imageslim" alt="quicksort"></p>
+        <h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h2><p><img src="https://user-images.githubusercontent.com/17522733/98710150-90aee100-2383-11eb-854f-bb4791b5e55e.gif" alt="quickSort"></p>
+<a id="more"></a>
+
 <h2 id="基本思想：挖坑填数-分治法"><a href="#基本思想：挖坑填数-分治法" class="headerlink" title="基本思想：挖坑填数 + 分治法"></a>基本思想：<strong>挖坑填数 + 分治法</strong></h2><ol>
 <li>从序列中取出一个数作为基准数</li>
 <li>分区过程：将比这个数大的数全部放到它的右边，小于或等于它的数全部放到它的左边</li>
@@ -355,7 +357,8 @@
 <p>2．j– 由后向前找比它小的数，找到后挖出此数填前一个坑 a[i] 中。</p>
 <p>3．i++ 由前向后找比它大的数，找到后也挖出此数填到前一个坑 a[j] 中。</p>
 <p>4．再重复执行 2，3 二步，直到 i==j，将基准数填入 a[i] 中。</p>
-<h2 id="实现代码："><a href="#实现代码：" class="headerlink" title="实现代码："></a>实现代码：</h2><p><a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/blob/master/code/leetcode/QuickSort/src/MySolution.java">https://github.com/ogugugugugua/Java-Notes/blob/master/code/leetcode/QuickSort/src/MySolution.java</a></p>
+<h2 id="实现代码："><a href="#实现代码：" class="headerlink" title="实现代码："></a>实现代码：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySolution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(<span class="keyword">int</span>[] a, <span class="keyword">int</span> low, <span class="keyword">int</span> high)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = low, j = high;</span><br><span class="line">        <span class="keyword">if</span> (low &gt; high) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> temp = a[i];        <span class="comment">//挖坑，取当前区间的第一个数为基准</span></span><br><span class="line">        <span class="keyword">while</span> (i &lt; j) &#123;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; a[j] &gt;= temp) &#123;</span><br><span class="line">                j--;            <span class="comment">//j-- 由后向前找比它小的数</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i&lt;j)&#123;</span><br><span class="line">                a[i] = a[j];        <span class="comment">//找到后挖出此数填前一个坑 a[i] 中</span></span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; a[i] &lt; temp) &#123;</span><br><span class="line">                i++;            <span class="comment">//i++ 由前向后找比它大的数</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i&lt;j)&#123;</span><br><span class="line">                a[j] = a[i];        <span class="comment">//找到后也挖出此数填到前一个坑 a[j] 中</span></span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        a[i] = temp;</span><br><span class="line">        sort(a, low, i-<span class="number">1</span>);</span><br><span class="line">        sort(a, i+<span class="number">1</span>, high);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">quickSort</span><span class="params">(<span class="keyword">int</span>[] a)</span></span>&#123;</span><br><span class="line">        sort(a, <span class="number">0</span>, a.length - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> a[] = &#123; <span class="number">49</span>, <span class="number">38</span>, <span class="number">65</span>, <span class="number">97</span>, <span class="number">76</span>, <span class="number">13</span>, <span class="number">27</span>, <span class="number">49</span> &#125;;</span><br><span class="line">        quickSort(a);</span><br><span class="line">        System.out.println(Arrays.toString(a));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
       
 
