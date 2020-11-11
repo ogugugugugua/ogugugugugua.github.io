@@ -6,20 +6,25 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://blog.yulin.cool">
-  <title>categories | 裕麟的blog</title>
+  <title>多线程与高并发7 | 裕麟的blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="华南理工大学信息工程本科+硕士，法国工程师文凭，后端技术分享">
-<meta property="og:type" content="website">
-<meta property="og:title" content="categories">
-<meta property="og:url" content="https://blog.yulin.cool/categories/index.html">
+  <meta name="description" content="线程池 上层有Executor接口，中间有ExecutorService接口，下层有ThreadPoolExecutor类。  我们使用Callable接口可以定义类似于Runnable功能的任务，然后交给线程去执行。区别在于Callable具有返回值，而且其使用场景一般与线程池相关。 由于Callable提交给线程池之后的执行是相对主线程异步的，所以我们可以把Callable将来执行产生的结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程与高并发7">
+<meta property="og:url" content="https://blog.yulin.cool/archives/a96ea6c4.html">
 <meta property="og:site_name" content="裕麟的blog">
-<meta property="og:description" content="华南理工大学信息工程本科+硕士，法国工程师文凭，后端技术分享">
+<meta property="og:description" content="线程池 上层有Executor接口，中间有ExecutorService接口，下层有ThreadPoolExecutor类。  我们使用Callable接口可以定义类似于Runnable功能的任务，然后交给线程去执行。区别在于Callable具有返回值，而且其使用场景一般与线程池相关。 由于Callable提交给线程池之后的执行是相对主线程异步的，所以我们可以把Callable将来执行产生的结">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-01-01T18:20:07.000Z">
-<meta property="article:modified_time" content="2020-11-10T20:50:59.509Z">
+<meta property="og:image" content="https://user-images.githubusercontent.com/17522733/98050291-a6775000-1e31-11eb-9dcc-f977979dfd66.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/17522733/97914181-c6364780-1d4f-11eb-86b5-c25fbdf42045.png">
+<meta property="article:published_time" content="2020-09-23T10:05:10.000Z">
+<meta property="article:modified_time" content="2020-11-11T11:47:34.712Z">
 <meta property="article:author" content="Yulin">
-<meta property="article:tag" content="后端工程师">
+<meta property="article:tag" content="JavaSE">
+<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="线程池">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/17522733/98050291-a6775000-1e31-11eb-9dcc-f977979dfd66.png">
   
     <link rel="alternative" href="/atom.xml" title="裕麟的blog" type="application/atom+xml">
   
@@ -159,20 +164,179 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article class="article article-type-post show">
-    <header class="article-header" style="border-bottom: 1px solid #ccc">
-    <h1 class="article-title" itemprop="name">
-      categories
-    </h1>
-    </header>
+            <article id="post-多线程与高并发7" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      多线程与高并发7
+    </h1>
+  
+
+        
+        <a href="/archives/a96ea6c4.html" class="archive-article-date">
+  	<time datetime="2020-09-23T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-23</time>
+</a>
+        
+      </header>
     
-    <div class="category-all-page">
-      <h2>共计&nbsp;4&nbsp;个分类</h2>
-      <ul class="category-list-item-list"><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Hexo/">Hexo</a><span class="category-list-item-list-count">2</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/JavaSE/">JavaSE</a><span class="category-list-item-list-count">6</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-item-list-count">8</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a><span class="category-list-item-list-count">1</span></li></ul>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <a id="more"></a>
+
+<h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><blockquote>
+<p>上层有Executor接口，中间有ExecutorService接口，下层有ThreadPoolExecutor类。</p>
+</blockquote>
+<p>我们使用Callable接口可以定义类似于Runnable功能的任务，然后交给线程去执行。区别在于Callable具有返回值，而且其使用场景一般与线程池相关。</p>
+<p>由于Callable提交给线程池之后的执行是相对主线程异步的，所以我们可以把Callable将来执行产生的结果存储在Future这个类中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException </span>&#123;</span><br><span class="line">    Callable&lt;String&gt; callable = <span class="keyword">new</span> Callable&lt;String&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;enter callable&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;test&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    ExecutorService service = Executors.newCachedThreadPool();</span><br><span class="line">    Future&lt;String&gt; future = service.submit(callable);<span class="comment">//异步的</span></span><br><span class="line">    System.out.println(future.get());<span class="comment">//阻塞的，因此会等1秒才得到输出</span></span><br><span class="line">    service.shutdown();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h2><p>相当于一个任务，此任务完成之后的结果页存储在其之中。其实现了RunnableFuture接口，而RunnableFuture接口继承了Runnable和Future两个接口。很灵活：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException </span>&#123;</span><br><span class="line">    FutureTask&lt;String&gt; task = <span class="keyword">new</span> FutureTask&lt;&gt;(()-&gt;&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;enter future task&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">new</span> Thread(task).start();</span><br><span class="line">    System.out.println(task.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="CompletableFuture"><a href="#CompletableFuture" class="headerlink" title="CompletableFuture"></a>CompletableFuture</h2><p>可以近似理解成多个Future的管理类。一个很有意思的应用是：在多个网站上使用多个线程同步拉取数据，当这些线程把任务都执行完之后，继续主线程，代码在<a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/blob/c54b05757bf18a7db3d95af93808e8b249ba0f81/code/multiThread/src/com/threadPool/testCompletableFuture.java">仓库</a>。</p>
+<p>在这里我们能很明显地看到CompletableFuture对于管理多个Future是很有效的，典型API如<code>allof</code>或者<code>anyof</code>用来指定当<code>全部</code>或者<code>其中之一</code>的任务完成时才做接下来的工作。</p>
+<hr>
+<h2 id="线程池类型"><a href="#线程池类型" class="headerlink" title="线程池类型"></a>线程池类型</h2><ol>
+<li>ThreadPoolExecutor</li>
+<li>ForkJoinPool：<ol>
+<li>用于分解汇总的任务</li>
+<li>用很少的线程可以执行很多的任务（子任务），而ThreadPoolExecutor做不到先执行子任务</li>
+<li>CPU密集型</li>
+</ol>
+</li>
+</ol>
+<p><img src="https://user-images.githubusercontent.com/17522733/98050291-a6775000-1e31-11eb-9dcc-f977979dfd66.png" alt="两种线程池"></p>
+<p><strong>阿里手册中要求线程池要自定义。</strong></p>
+<p><strong>线程池维护着两个集合：线程的集合 &amp;&amp; 任务的集合。</strong></p>
+<hr>
+<h2 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h2><p>与上层接口的关系：</p>
+<p><img src="https://user-images.githubusercontent.com/17522733/97914181-c6364780-1d4f-11eb-86b5-c25fbdf42045.png" alt="image-20201102210928195"></p>
+<p>其自定义初始化需要有7个参数【背】：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,						//核心线程数(不归还给操作系统)</span></span></span><br><span class="line"><span class="function">                          <span class="keyword">int</span> maximumPoolSize,					<span class="comment">//最大线程数(扩容的最大值)</span></span></span><br><span class="line"><span class="function">                          <span class="keyword">long</span> keepAliveTime,					<span class="comment">//空闲线程存活时间数值</span></span></span><br><span class="line"><span class="function">                          TimeUnit unit,						<span class="comment">//存活时间单位</span></span></span><br><span class="line"><span class="function">                          BlockingQueue&lt;Runnable&gt; workQueue,	 <span class="comment">//任务队列(类型是阻塞队列)</span></span></span><br><span class="line"><span class="function">                          ThreadFactory threadFactory,			 <span class="comment">//线程工厂 (产生什么类型的线程等)</span></span></span><br><span class="line"><span class="function">                          RejectedExecutionHandler handler)		 <span class="comment">//拒绝策略</span></span></span><br></pre></td></tr></table></figure>
+
+<p>对于第5个参数，能够在某种程度上决定这个线程池的一些特点，比如：假设我们使用SynchrnousQueue，就会来一个任务则马上被处理，因为其容量为0。</p>
+<p>对于第6个参数，我们可以自定义线程工厂。【阿里：创建线程或线程池时请指定有意义的线程名称，方便出错时回溯】。在<code>Executors.java</code>里面有一个<code>static class DefaultThreadFactory implements ThreadFactory</code>默认线程工厂，其中的核心函数<code>newThread</code>就会指定线程的名字。</p>
+<blockquote>
+<p>阿里手册中，线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方式，这样的处理方式能够更加明确线程池的运行规则，避免资源耗尽的风险。是<strong>因为</strong>：FixedThreadPool和SingleThreadPool允许的<strong>请求队列长度</strong>为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM。CachedThreadPool允许的<strong>创建线程数量</strong>为Integer.MAX_VALUE，可能会创建大量的线程，从而也导致OOM。</p>
+</blockquote>
+<p>啊！</p>
+<p>对于第7个参数拒绝策略，默认有4种，在真实场景中往往会自定义。</p>
+
+      
+
+      
     </div>
-    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">线程池</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/多线程//" class="article-tag-list-link color4">多线程</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/archives/39d1bb55.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          多线程与高并发8
+        
+      </div>
+    </a>
+  
+  
+    <a href="/archives/de699652.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">多线程与高并发6</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="toc-number">1.</span> <span class="toc-text">线程池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FutureTask"><span class="toc-number">2.</span> <span class="toc-text">FutureTask</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CompletableFuture"><span class="toc-number">3.</span> <span class="toc-text">CompletableFuture</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">线程池类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ThreadPoolExecutor"><span class="toc-number">5.</span> <span class="toc-text">ThreadPoolExecutor</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
+  
+
+  
+
+  
+
+  
+
+
           </div>
         </div>
       </div>
@@ -193,7 +357,7 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
