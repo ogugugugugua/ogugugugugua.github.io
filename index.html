@@ -179,54 +179,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<h2 id="Executors"><a href="#Executors" class="headerlink" title="Executors"></a>Executors</h2><p>可以看成是线程池的工厂。可以返回各种线程池。</p>
-<p>何时用Cached何时用Fixed？</p>
-<blockquote>
-<p>对于任务的到来具有峰谷值的情况下推荐用Cached，而对于任务的到来比较平缓的情况推荐使用Fixed。</p>
-</blockquote>
-<hr>
-<h2 id="单线程的线程池"><a href="#单线程的线程池" class="headerlink" title="单线程的线程池"></a>单线程的线程池</h2><p>单线程的线程池<code>Executors.newSingleThreadExecutor()</code>可以保证进去的任务被顺序执行。而且其内部帮忙维护了任务队列，就蛮好的。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService</span><br><span class="line">        (<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,								<span class="comment">//核心线程数是1，最大线程数也是1</span></span><br><span class="line">                                <span class="number">0L</span>, TimeUnit.MILLISECONDS,				<span class="comment">//非核心线程存活时间为0，因为没有非核心线程</span></span><br><span class="line">                                <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));	<span class="comment">//最大长度为Integer.MAX_VALUE</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="缓存线程池"><a href="#缓存线程池" class="headerlink" title="缓存线程池"></a>缓存线程池</h2><p><code>Executors.newCachedThreadPool()</code>的特点是：在线程数量少于Integer.MAX_VALUE的情况下，来一个任务就会起一个新的线程来执行。存货时间是60秒。实现的原理是任务队列类型为SynchronousQueue，其容量为0，如果没有take掉的话就会处于阻塞状态。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,				<span class="comment">//核心线程数是0，最大线程数是Integer.MAX_VALUE</span></span><br><span class="line">                                  <span class="number">60L</span>, TimeUnit.SECONDS,			<span class="comment">//非核心线程存活时间为60秒</span></span><br><span class="line">                                  <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());	<span class="comment">//任务队列类型为SynchronousQueue，来一个执行一个</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>对于定时任务线程池，可以使用<code>Executors.newScheduledThreadPool()</code>，也推荐使用quartz或者cron这两种工具。</p>
-<hr>
-<h2 id="并行VS并发："><a href="#并行VS并发：" class="headerlink" title="并行VS并发："></a>并行VS并发：</h2><blockquote>
-<p>并发指任务提交，并行指任务执行。</p>
-</blockquote>
-<hr>
-<h2 id="ThreadPoolExecutor源码解析"><a href="#ThreadPoolExecutor源码解析" class="headerlink" title="ThreadPoolExecutor源码解析"></a>ThreadPoolExecutor源码解析</h2><p>从上面的源码可以看出来，其底层的线程池创建还是调用了ThreadPoolExecutor函数，现在来看看它的源码：</p>
-<p>常用变量的解析</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. ctl 可以看做一个int类型的数字，高3位代表线程池状态，低29位代表worker数量</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger ctl = <span class="keyword">new</span> AtomicInteger(ctlOf(RUNNING, <span class="number">0</span>));</span><br><span class="line"><span class="comment">//2. 这个数是32-3=29</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> COUNT_BITS = Integer.SIZE - <span class="number">3</span>;</span><br><span class="line"><span class="comment">//3. 线程池允许的最大线程数，即2^29-1</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CAPACITY   = (<span class="number">1</span> &lt;&lt; COUNT_BITS) - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// runState is stored in the high-order bits</span></span><br><span class="line"><span class="comment">//4. 线程池有5种状态，按大小排序为RUNNING &lt; SHUTDOWN &lt; STOP &lt; TIDYING&lt; TERMINATED</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RUNNING    = -<span class="number">1</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SHUTDOWN   =  <span class="number">0</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STOP       =  <span class="number">1</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TIDYING    =  <span class="number">2</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TERMINATED =  <span class="number">3</span> &lt;&lt; COUNT_BITS;</span><br></pre></td></tr></table></figure>
-
-<p>构造方法并没有太多新意，主要是检查参数是否合法以及是否为空，然后进行赋值</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (corePoolSize &lt; <span class="number">0</span> ||</span><br><span class="line">    maximumPoolSize &lt;= <span class="number">0</span> ||</span><br><span class="line">    maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">    keepAliveTime &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line"><span class="keyword">if</span> (workQueue == <span class="keyword">null</span> || threadFactory == <span class="keyword">null</span> || handler == <span class="keyword">null</span>)</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br></pre></td></tr></table></figure>
-
-<h3 id="执行提交的task的过程"><a href="#执行提交的task的过程" class="headerlink" title="执行提交的task的过程"></a>执行提交的task的过程</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (command == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Proceed in 3 steps:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 1. If fewer than corePoolSize threads are running, try to</span></span><br><span class="line"><span class="comment">     * start a new thread with the given command as its first</span></span><br><span class="line"><span class="comment">     * task.  The call to addWorker atomically checks runState and</span></span><br><span class="line"><span class="comment">     * workerCount, and so prevents false alarms that would add</span></span><br><span class="line"><span class="comment">     * threads when it shouldn&#x27;t, by returning false.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 2. If a task can be successfully queued, then we still need</span></span><br><span class="line"><span class="comment">     * to double-check whether we should have added a thread</span></span><br><span class="line"><span class="comment">     * (because existing ones died since last checking) or that</span></span><br><span class="line"><span class="comment">     * the pool shut down since entry into this method. So we</span></span><br><span class="line"><span class="comment">     * recheck state and if necessary roll back the enqueuing if</span></span><br><span class="line"><span class="comment">     * stopped, or start a new thread if there are none.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 3. If we cannot queue task, then we try to add a new</span></span><br><span class="line"><span class="comment">     * thread.  If it fails, we know we are shut down or saturated</span></span><br><span class="line"><span class="comment">     * and so reject the task.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> c = ctl.get();</span><br><span class="line">    <span class="comment">//worker数量比核心线程数小，直接创建worker执行任务</span></span><br><span class="line">    <span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">        <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        c = ctl.get();	<span class="comment">//由于多线程的缘故，需要再次取值</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//worker数量超过核心线程数，任务直接进入队列</span></span><br><span class="line">    <span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">        <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">        <span class="comment">//若线程池状态不是RUNNING状态，说明执行过shutdown命令，需要对新加入的任务执行reject操作</span></span><br><span class="line">        <span class="comment">//这里做recheck的原因是任务进入队列前后，线程池的状态可能会发生改变</span></span><br><span class="line">        <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">            reject(command);</span><br><span class="line">        <span class="comment">//若检查可用的核心线程数为0，则增加非核心线程</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">            addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果线程池不是运行状态，或者任务进入队列失败，则尝试创建worker执行任务</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">        reject(command);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="ThreadPoolExecutor的execute方法执行过程总结："><a href="#ThreadPoolExecutor的execute方法执行过程总结：" class="headerlink" title="ThreadPoolExecutor的execute方法执行过程总结："></a><strong>ThreadPoolExecutor的execute方法执行过程总结</strong>：</h2><ol>
-<li>核心线程数不够：新增核心线程。</li>
-<li>核心线程数够了：加队列。</li>
-<li>核心线程够了 &amp;&amp; 队列满了： 新增非核心线程。</li>
-</ol>
-<p>流程图如下：</p>
-<p><img src="https://user-images.githubusercontent.com/17522733/98036969-2e059480-1e1b-11eb-98b2-1b2304c4bf2f.png" alt="ThreadPoolExecutor java public void execute(Runnable command) 源码流程图即对应代码 (1)"></p>
-<hr>
-<p>addWorker可以理解为添加线程的函数：</p>
-<p>​    count++； 真的增加一个worker并start；</p>
-<hr>
-<p>worker本身是一个Runnable的子类。进来到线程池里的任务用worker来包装一下。因为里面有很多的状态需要记录，比如有一个成员变量thread用于记录当前任务所处的线程。</p>
-<hr>
-<h2 id="ForkJoinPool"><a href="#ForkJoinPool" class="headerlink" title="ForkJoinPool"></a>ForkJoinPool</h2><p><a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/blob/1056bd9cd0ecb1557599bf73977c333ad0d6c39e/code/multiThread/src/com/threadPool/testForkJoinPool.java">ForkJoinPool</a>适合处理将大任务分解成小任务的情况。先分叉再汇总。</p>
-<p>首先需要定义适合这种线程池处理的任务，底层一点的有ForkJoinTask，常用的它的子类有RecursiveAction（不带返回值）和RecursiveTask（带返回值）。</p>
-<hr>
-<p>Executors.netWorkStealingPool() 是ForkJoin类型的线程池。</p>
-<p>特点：每个线程有自己单独的队列！</p>
-
+        <p>笔记Part8</p>
+        
+          <a class="article-more-a" href="/archives/39d1bb55.html#more">more >></a>
+        
       
 
       
@@ -322,49 +278,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><blockquote>
-<p>上层有Executor接口，中间有ExecutorService接口，下层有ThreadPoolExecutor类。</p>
-</blockquote>
-<p>我们使用Callable接口可以定义类似于Runnable功能的任务，然后交给线程去执行。区别在于Callable具有返回值，而且其使用场景一般与线程池相关。</p>
-<p>由于Callable提交给线程池之后的执行是相对主线程异步的，所以我们可以把Callable将来执行产生的结果存储在Future这个类中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException </span>&#123;</span><br><span class="line">    Callable&lt;String&gt; callable = <span class="keyword">new</span> Callable&lt;String&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;enter callable&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;test&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    ExecutorService service = Executors.newCachedThreadPool();</span><br><span class="line">    Future&lt;String&gt; future = service.submit(callable);<span class="comment">//异步的</span></span><br><span class="line">    System.out.println(future.get());<span class="comment">//阻塞的，因此会等1秒才得到输出</span></span><br><span class="line">    service.shutdown();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h2><p>相当于一个任务，此任务完成之后的结果页存储在其之中。其实现了RunnableFuture接口，而RunnableFuture接口继承了Runnable和Future两个接口。很灵活：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException </span>&#123;</span><br><span class="line">    FutureTask&lt;String&gt; task = <span class="keyword">new</span> FutureTask&lt;&gt;(()-&gt;&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;enter future task&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">new</span> Thread(task).start();</span><br><span class="line">    System.out.println(task.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="CompletableFuture"><a href="#CompletableFuture" class="headerlink" title="CompletableFuture"></a>CompletableFuture</h2><p>可以近似理解成多个Future的管理类。一个很有意思的应用是：在多个网站上使用多个线程同步拉取数据，当这些线程把任务都执行完之后，继续主线程，代码在<a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/blob/c54b05757bf18a7db3d95af93808e8b249ba0f81/code/multiThread/src/com/threadPool/testCompletableFuture.java">仓库</a>。</p>
-<p>在这里我们能很明显地看到CompletableFuture对于管理多个Future是很有效的，典型API如<code>allof</code>或者<code>anyof</code>用来指定当<code>全部</code>或者<code>其中之一</code>的任务完成时才做接下来的工作。</p>
-<hr>
-<h2 id="线程池类型"><a href="#线程池类型" class="headerlink" title="线程池类型"></a>线程池类型</h2><ol>
-<li>ThreadPoolExecutor</li>
-<li>ForkJoinPool：<ol>
-<li>用于分解汇总的任务</li>
-<li>用很少的线程可以执行很多的任务（子任务），而ThreadPoolExecutor做不到先执行子任务</li>
-<li>CPU密集型</li>
-</ol>
-</li>
-</ol>
-<p><img src="https://user-images.githubusercontent.com/17522733/98050291-a6775000-1e31-11eb-9dcc-f977979dfd66.png" alt="两种线程池"></p>
-<p><strong>阿里手册中要求线程池要自定义。</strong></p>
-<p><strong>线程池维护着两个集合：线程的集合 &amp;&amp; 任务的集合。</strong></p>
-<hr>
-<h2 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h2><p>与上层接口的关系：</p>
-<p><img src="https://user-images.githubusercontent.com/17522733/97914181-c6364780-1d4f-11eb-86b5-c25fbdf42045.png" alt="image-20201102210928195"></p>
-<p>其自定义初始化需要有7个参数【背】：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,						//核心线程数(不归还给操作系统)</span></span></span><br><span class="line"><span class="function">                          <span class="keyword">int</span> maximumPoolSize,					<span class="comment">//最大线程数(扩容的最大值)</span></span></span><br><span class="line"><span class="function">                          <span class="keyword">long</span> keepAliveTime,					<span class="comment">//空闲线程存活时间数值</span></span></span><br><span class="line"><span class="function">                          TimeUnit unit,						<span class="comment">//存活时间单位</span></span></span><br><span class="line"><span class="function">                          BlockingQueue&lt;Runnable&gt; workQueue,	 <span class="comment">//任务队列(类型是阻塞队列)</span></span></span><br><span class="line"><span class="function">                          ThreadFactory threadFactory,			 <span class="comment">//线程工厂 (产生什么类型的线程等)</span></span></span><br><span class="line"><span class="function">                          RejectedExecutionHandler handler)		 <span class="comment">//拒绝策略</span></span></span><br></pre></td></tr></table></figure>
-
-<p>对于第5个参数，能够在某种程度上决定这个线程池的一些特点，比如：假设我们使用SynchrnousQueue，就会来一个任务则马上被处理，因为其容量为0。</p>
-<p>对于第6个参数，我们可以自定义线程工厂。【阿里：创建线程或线程池时请指定有意义的线程名称，方便出错时回溯】。在<code>Executors.java</code>里面有一个<code>static class DefaultThreadFactory implements ThreadFactory</code>默认线程工厂，其中的核心函数<code>newThread</code>就会指定线程的名字。</p>
-<blockquote>
-<p>阿里手册中，线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方式，这样的处理方式能够更加明确线程池的运行规则，避免资源耗尽的风险。是<strong>因为</strong>：FixedThreadPool和SingleThreadPool允许的<strong>请求队列长度</strong>为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM。CachedThreadPool允许的<strong>创建线程数量</strong>为Integer.MAX_VALUE，可能会创建大量的线程，从而也导致OOM。</p>
-</blockquote>
-<p>啊！</p>
-<p>对于第7个参数拒绝策略，默认有4种，在真实场景中往往会自定义。</p>
-
+        <p>笔记Part7</p>
+        
+          <a class="article-more-a" href="/archives/a96ea6c4.html#more">more >></a>
+        
       
 
       
@@ -456,82 +373,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<h2 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h2><p>在物理结构上只有两种：连续存储（数组）和非连续存储（链表）</p>
-<p>按照编排方式可以按下图的方式进行分离：<strong>【背好】</strong></p>
-<p><img src="https://user-images.githubusercontent.com/17522733/97811254-9583de80-1c79-11eb-87be-708336293afd.png"></p>
-<p>这个BlockingQueue阻塞队列主要服务于高并发的任务。</p>
-<p>Deque是双端队列。</p>
-<p>Vector和HashTable的很多操作都加了synchronized，所以在一定程度上性能一般般。</p>
-<hr>
-<h2 id="HashMap-amp-amp-HashTable-amp-amp-ConcurrentHashMap"><a href="#HashMap-amp-amp-HashTable-amp-amp-ConcurrentHashMap" class="headerlink" title="HashMap &amp;&amp; HashTable &amp;&amp; ConcurrentHashMap"></a>HashMap &amp;&amp; HashTable &amp;&amp; ConcurrentHashMap</h2><p>HashMap没有加synchronized，所以它不是线程安全的。</p>
-<p>通过Collections.synchronizedMap(new HashMap&lt;&gt;());可以获得线程安全的HashMap。在底层实现上依旧是加了synchronized。</p>
-<p>目前来说HashTable和Vector基本不用。</p>
-<p>现在有一个<strong>读效率</strong>更高的ConcurrentHashMap。</p>
-<p><strong>注意</strong>：上述的这些Map并不是绝对的替代关系，因为CAS和synchronized没有绝对的优劣之分，要根据实际情况下并发量的大小和并发代码的执行时间进行具体的判断。</p>
-<hr>
-<h2 id="ConcurrentLinkedQueue"><a href="#ConcurrentLinkedQueue" class="headerlink" title="ConcurrentLinkedQueue"></a>ConcurrentLinkedQueue</h2><p>注意：即使使用了线程安全的容器比如vector，依然有可能会出现问题，比如我们调用了synchronized的size方法判断大小之后，再调用synchronized的remove方法去除元素，但是中间可能会有别的线程对容器进行干预，也就是说两个原子操作之间并不能保证原子性。</p>
-<p>解决办法：使用ConcurrentLinkedQueue（对应remove的是poll方法）。以后对于单个元素的集合，尽量考虑Queue集合而不是List集合，因为其对高并发具有更好的支持。</p>
-<p>查看源码可以发现ConcurrentLinkedQueue的底层原子性是通过CAS来实现的，所以其效率很高。</p>
-<hr>
-<h2 id="TreeMap-amp-amp-ConcurrentSkipListMap"><a href="#TreeMap-amp-amp-ConcurrentSkipListMap" class="headerlink" title="TreeMap &amp;&amp; ConcurrentSkipListMap"></a>TreeMap &amp;&amp; ConcurrentSkipListMap</h2><p>TreeMap使用红黑树实现，内部已排序，在查找的时候效率高。</p>
-<p>ConcurrentSkipListMap支持高并发而且排序。通过跳表来实现。（代替了不存在的ConcurrentTreeMap）</p>
-<p>跳表的结构是这样的：</p>
-<p><img src="https://www.xstnet.com/uploads/images/2019-09/b7ec1e2fa4791f9a16e5bd661fc50040.png"></p>
-<p>最底层基础的还是一个链表结构，然后在其上层逐步进行抽象，只拿下层的若干个关键节点，这样有利于减少查询次数。</p>
-<hr>
-<h2 id="CopyOnWriteList-CopyOnWriteSet-写时复制"><a href="#CopyOnWriteList-CopyOnWriteSet-写时复制" class="headerlink" title="CopyOnWriteList / CopyOnWriteSet 写时复制"></a>CopyOnWriteList / CopyOnWriteSet 写时复制</h2><p>应用场景：写得少，读得多。（因为这个结构在读的时候不加锁，写的时候进行一波复制）</p>
-<p>这个东西的源码非常容易理解：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//添加一个元素：Appends the specified element to the end of this list.</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;		</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();				<span class="comment">//锁上</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Object[] elements = getArray();	</span><br><span class="line">        <span class="keyword">int</span> len = elements.length;	<span class="comment">//获取原数组长度</span></span><br><span class="line">        Object[] newElements = Arrays.copyOf(elements, len + <span class="number">1</span>);	<span class="comment">//复制一个新数组，并指定长度加一</span></span><br><span class="line">        newElements[len] = e;		<span class="comment">//设定最新添加的元素在末位</span></span><br><span class="line">        setArray(newElements);		<span class="comment">//更改引用</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();				<span class="comment">//释放锁</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除一个元素Removes the element at the specified position in this list. Shifts any subsequent elements to the left</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;	</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();						<span class="comment">//锁上</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Object[] elements = getArray();</span><br><span class="line">        <span class="keyword">int</span> len = elements.length;			<span class="comment">//获取原数组长度</span></span><br><span class="line">        E oldValue = get(elements, index);	<span class="comment">//获取被删除的元素</span></span><br><span class="line">        <span class="keyword">int</span> numMoved = len - index - <span class="number">1</span>;		<span class="comment">//计算index后方需要移动的元素个数</span></span><br><span class="line">        <span class="keyword">if</span> (numMoved == <span class="number">0</span>)					<span class="comment">//index后方需要移动的元素个数为0，即删除了最后一个元素</span></span><br><span class="line">            setArray(Arrays.copyOf(elements, len - <span class="number">1</span>));	<span class="comment">//直接把整个数组复制到新的数组里并忽略最后一位即可</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            Object[] newElements = <span class="keyword">new</span> Object[len - <span class="number">1</span>];	<span class="comment">//先new一个新的数组</span></span><br><span class="line">            System.arraycopy(elements, <span class="number">0</span>, newElements, <span class="number">0</span>, index);	<span class="comment">//复制前半部分</span></span><br><span class="line">            System.arraycopy(elements, index + <span class="number">1</span>, newElements, index, numMoved);	<span class="comment">//复制后半部分</span></span><br><span class="line">            setArray(newElements);			<span class="comment">//指向新的引用								</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> oldValue;					<span class="comment">//返回被删除的元素</span></span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();						<span class="comment">//释放锁</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="BlockingQueue-阻塞队列"><a href="#BlockingQueue-阻塞队列" class="headerlink" title="BlockingQueue 阻塞队列"></a>BlockingQueue 阻塞队列</h2><p>重点在“阻塞”上。有以下几种：</p>
-<ul>
-<li>DelayBlockingQueue可以实现在时间上的排序。</li>
-<li>ArrayBlockingQueue有界的。</li>
-<li>LinkedBlockingQueue无界的。</li>
-<li>SynchronousQueue一般用于线程间传递任务。</li>
-<li>TransferQueue也同于线程间传递任务，可以传多个。</li>
-</ul>
-<hr>
-<h2 id="LinkedBlockingQueue"><a href="#LinkedBlockingQueue" class="headerlink" title="LinkedBlockingQueue"></a>LinkedBlockingQueue</h2><p>关于Queue这个类的方法，一般常用offer来增加，用peek来查看顶端，poll来查看并删除顶端。</p>
-<p>对于BlockingQueue这个接口而言，会有以下的方法：</p>
-<ol>
-<li>添加元素：</li>
-</ol>
-<ul>
-<li>add：有位置则增加，如果满了就会报错</li>
-<li>offer：有位置则增加，如果满了就会返回false</li>
-<li>put：有位置则增加，如果满了就会阻塞到有位置再增加</li>
-</ul>
-<ol start="2">
-<li>删除元素：</li>
-</ol>
-<ul>
-<li>remove：有对应元素则删除并返回true，否则返回false</li>
-<li>poll(long timeout, TimeUnit unit)：返回并删除队列的头节点，等待时间超过unit之后就会有中断异常</li>
-<li>take：返回并删除队列的头结点，如果队列为空则阻塞直到有值可以返回</li>
-</ul>
-<p>显然这种BlockingQueue就是天生对线程安全的生产着消费者模型</p>
-<p>比如我们可以看LinkedBlockingQueue的put方法源码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//类成员</span></span><br><span class="line"><span class="comment">/** Lock held by take, poll, etc */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock takeLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Wait queue for waiting takes */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty = takeLock.newCondition();</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Lock held by put, offer, etc */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock putLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Wait queue for waiting puts */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notFull = putLock.newCondition();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Inserts the specified element at the tail of this queue, waiting if</span></span><br><span class="line"><span class="comment"> * necessary for space to become available.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> InterruptedException &#123;<span class="doctag">@inheritDoc</span>&#125;</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> NullPointerException &#123;<span class="doctag">@inheritDoc</span>&#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(E e)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (e == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="comment">// Note: convention in all put/take/etc is to preset local var</span></span><br><span class="line">    <span class="comment">// holding count negative to indicate failure unless set.</span></span><br><span class="line">    <span class="keyword">int</span> c = -<span class="number">1</span>;</span><br><span class="line">    Node&lt;E&gt; node = <span class="keyword">new</span> Node&lt;E&gt;(e);	<span class="comment">//即将放进去的Node节点</span></span><br><span class="line">    <span class="keyword">final</span> ReentrantLock putLock = <span class="keyword">this</span>.putLock;</span><br><span class="line">    <span class="keyword">final</span> AtomicInteger count = <span class="keyword">this</span>.count;<span class="comment">//当前元素个数</span></span><br><span class="line">    putLock.lockInterruptibly();	<span class="comment">//锁上</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (count.get() == capacity) &#123;</span><br><span class="line">            notFull.await();		<span class="comment">//满了就等待</span></span><br><span class="line">        &#125;</span><br><span class="line">        enqueue(node);				<span class="comment">//放进去</span></span><br><span class="line">        c = count.getAndIncrement(); <span class="comment">//当前元素个数是之前个数+1</span></span><br><span class="line">        <span class="keyword">if</span> (c + <span class="number">1</span> &lt; capacity)</span><br><span class="line">            notFull.signal();		<span class="comment">//加完之后还没满，可以让其他等待着的线程继续添加元素</span></span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        putLock.unlock();			<span class="comment">//解锁</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>)</span><br><span class="line">        signalNotEmpty();			<span class="comment">//加完之后就刚好不空了，唤醒那些等待着take的线程来取元素</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>而ArrayBlockingQueue可以指定容量capacity，满了的时候如果使用put方法就会阻塞，同理满了的时候使用add就会抛出异常。</p>
-<hr>
-<h3 id="总结一下："><a href="#总结一下：" class="headerlink" title="总结一下："></a><strong>总结一下</strong>：</h3><ul>
-<li>Queue和List这两个集合的区别主要在于对于多线程的支持，提供了很多友好的API，比如offer，peek，poll。</li>
-<li>Queue的子类BlockingQueue又添加了一些与阻塞相关的API，比如take，put。</li>
-</ul>
-<hr>
-<h2 id="几个特殊一些的BlockingQueue"><a href="#几个特殊一些的BlockingQueue" class="headerlink" title="几个特殊一些的BlockingQueue"></a>几个特殊一些的BlockingQueue</h2><p><strong>DelayQueue</strong>可以按照在里面等待的时间进行排序。本质上使用的是PriorityQueue，应用场景：按照时间进行任务调度。</p>
-<p><strong>SynchrnousQueue</strong>的使用场景类似于Exchanger。需要有一个线程在阻塞着等take拿数据时候，才可以另一个线程往里面put放数据，否则无法放进去。内部无法存储元素，当要添加元素的时候，需要阻塞。</p>
-<p><strong>LinkedTransferQueue</strong>可以算是 <code>LinkedBolckingQueue</code> 和 <code>SynchronousQueue</code> 和合体。<code>LinkedTransferQueue</code>是 <code>SynchronousQueue</code> 和 <code>LinkedBlockingQueue</code> 的合体，性能比 <code>LinkedBlockingQueue</code> 更高（没有锁操作），比 <code>SynchronousQueue</code>能存储更多的元素。</p>
-<p>当 <code>put</code> 时，如果有等待的线程，就直接将元素 “交给” 等待者， 否则直接进入队列。    </p>
-<p><code>put</code>和 <code>transfer</code> 方法的区别是，put 是立即返回的， transfer 是阻塞等待消费者拿到数据才返回。<code>transfer</code>方法和 <code>SynchronousQueue</code>的 put 方法类似。</p>
-
+        <p>笔记Part6</p>
+        
+          <a class="article-more-a" href="/archives/de699652.html#more">more >></a>
+        
       
 
       
@@ -627,34 +472,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<h2 id="varHandle"><a href="#varHandle" class="headerlink" title="varHandle"></a>varHandle</h2><p>可以用于获取某个对象的引用，其具有两个有意思的特点：</p>
-<ol>
-<li>可以对普通属性进行原子操作。</li>
-<li>比反射快，直接操纵二进制码</li>
-</ol>
-<hr>
-<h2 id="ThreadLocal类"><a href="#ThreadLocal类" class="headerlink" title="ThreadLocal类"></a>ThreadLocal类</h2><p>允许我们创建只能被同一个线程读写的变量。因此，如果一段代码含有一个ThreadLocal变量的引用，即使两个线程同时执行这段代码，它们也无法访问到对方的ThreadLocal变量。</p>
-<p>数据库声明式事务可以用到，以保证多个事务用到的是同一个连接：在单线程应用程序中可能会维持一个全局的数据库连接，并在程序启动时初始化这个连接对象，从而避免在调用每个方法时都要传递一个Connection对象。由于JDBC的连接对象不一定是线程安全的，因此在多线程应用程序在没有协同的情况下使用全局变量时，就不是线程安全的。通过将JDBC的连接保存到ThreadLocal对象中，每个线程都会拥有属于自己的连接：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;Connection&gt; connectionHolder = <span class="keyword">new</span> ThreadLocal&lt;Connection&gt;()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Connection <span class="title">initialValue</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DriverManager.getConnection(DB_URL);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> connectionHolder.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当某个线程首次调用ThreadLocal.get方法时，就会调用initialValue来获取初始值。</p>
-<p>从概念上看，可以将ThreadLocal<T> 看成包含了Map&lt;Thread, T&gt;对象，其中保存了特定于该线程的值。</p>
-<p>如果需要将一个单线程应用程序移植到多线程环境中，通过将共享的全局变量转换为ThreadLocal对象，可以维持线程安全性。</p>
-<hr>
-<h2 id="Java的四种引用："><a href="#Java的四种引用：" class="headerlink" title="Java的四种引用："></a>Java的四种引用：</h2><p>强软弱虚</p>
-<ol>
-<li><p>普通的引用就是强引用。被强引用的对象显然不会被GC回收</p>
-</li>
-<li><p>软引用SoftReference。当一个内存被软引用指向，只有当空间不够用的时候才会被回收。用途：可以用在缓存，比如缓存一个大图片。</p>
-</li>
-<li><p>弱引用WeakReference。只要遇到GC就会被回收。一般用在容器里。如WeakHashMap。一个典型的应用就是ThreadLocal。</p>
-</li>
-<li><p>虚引用PhantomReference管理堆外内存。</p>
-</li>
-</ol>
-
+        <p>笔记Part5</p>
+        
+          <a class="article-more-a" href="/archives/4760c7e8.html#more">more >></a>
+        
       
 
       
@@ -750,37 +571,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<blockquote>
-<p><a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/tree/2237b94422e32529f6a1825a3023975be95c560c/code/multiThread/src/com/interviewExercises/ex1">淘宝面试题1</a>：实现一个容器，提供两个方法add size，写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数到5个时，线程2给出提示并结束</p>
-</blockquote>
-<p><strong>解法详解：</strong></p>
-<ul>
-<li>T01并不能用，因为线程1更改的内容对于线程2来说并不可见。</li>
-<li>T02和T03本质上属于在T01基础上增加了volatile关键字，虽然可行但是很奇怪：volatile修饰的是指向内存地址的指针，而这个指针是不会随着内存中值的修改而变化的，所以并不能合理地解释为什么线程1修改的值能够及时让线程2感知到。暂时放下不表。</li>
-<li>T04也不能用。因为notify不释放锁，所以线程1即使唤醒了线程2，但是并没有释放掉锁，线程2只能等着。</li>
-<li>T05是真正可用的版本，需要背下来，这是最基础原始的写法。线程1在容器到达指定size的时候通知线程2的同时需要把自己停掉，等线程2执行完之后再唤醒线程1。</li>
-<li>T06与T05在思想上高度雷同，但是使用了两个CountDownLatch这个工具，使得原来的wait方法变成了latch.wait，原来的notify方法变成了latch.countDown方法。</li>
-<li>T07是最简洁的版本，同样与T05在思想上高度雷同，使用了LockSupport工具，使用park方法代替wait来停住自己，使用unpark方法代替notify来唤醒另外一个线程。</li>
-</ul>
-<hr>
-<blockquote>
-<p><a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/tree/2237b94422e32529f6a1825a3023975be95c560c/code/multiThread/src/com/interviewExercises/ex2">淘宝面试题2</a>：写一个固定容量同步容器，拥有put和get方法，以及getCount方法，能够支持2个生产者线程和10个消费者线程的阻塞调用。</p>
-</blockquote>
-<ul>
-<li>这是经典的题目，需要直接<strong>背</strong>好解题。</li>
-<li>需要注意的是需要使用while来判断当前size和最大/最小限制的关系。</li>
-<li>T01是比较高效的版本，由于引入了Condition这个工具，只会唤醒指定线程队列里面的等待队列。</li>
-</ul>
-<hr>
-<h2 id="LockSupport"><a href="#LockSupport" class="headerlink" title="LockSupport"></a>LockSupport</h2><p>unpark可以在park前调用，以失效即将到来的park。可以看出比wait和notify更灵活。</p>
-<hr>
-<h2 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h2><p>本质就是等待队列！</p>
-<hr>
-<h2 id="AQS"><a href="#AQS" class="headerlink" title="AQS"></a>AQS</h2><p>AbstractQueuedSynchronizer 是很<strong>重要</strong>的类，需要仔细阅读源码</p>
-<p>模板方法 钩子函数; template method, callback function</p>
-
+        <p>笔记Part4</p>
+        
+          <a class="article-more-a" href="/archives/3067f77e.html#more">more >></a>
+        
       
 
       
@@ -801,15 +595,15 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JUC</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">面试题</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">AQS</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JUC</a>
         		</li>
       		
 		</ul>
@@ -880,41 +674,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<h2 id="LongAdder"><a href="#LongAdder" class="headerlink" title="LongAdder"></a>LongAdder</h2><p>分段锁。</p>
-<hr>
-<h2 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h2><p>它的使用可以替代synchronized：在原来使用synchronized(this)的地方换成reentrantLock.lock()，然后记得最后要reentrantLock.unlock()。同时要注意把lock()写在try里面，unlock()写在finally里面。以避免出现异常而无法正常释放锁。</p>
-<p>ReentrantLock有一些比synchronized要强大的地方，比如：</p>
-<ul>
-<li><p>可以尝试锁，自行决定等待锁时间：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    lock.tryLock(<span class="number">6</span>, TimeUnit.MILLISECONDS);</span><br><span class="line">&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">    lock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>可以被打断的加锁</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">    lock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>可以实现公平锁：即先到先得，最后来的锁不能马上抢到对象，而是要进入等待队列中排队</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Lock lock1 = <span class="keyword">new</span> ReentrantLock(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<hr>
-<h2 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a>CyclicBarrier</h2><p>一个同步辅助类，它允许一组线程互相等待，直到到达某个公共屏障点 (common barrier point)。</p>
-<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>在某种需求中，比如一个大型的任务，常常需要分配好多子任务去执行，只有当所有子任务都执行完成时候，才能执行主任务，这时候，就可以选择CyclicBarrier了。具体地，一个请求过来之后需要先进行数据库操作+文件操作+计算操作，这三者可以使用三个线程来同步执行，当这三个任务都执行完成后，执行一个渲染页面任务，此时可以在前三者的任务代码中调用CyclicBarrier的await()方法，然后把最后一个任务内容写在CyclicBarrier的Runnable里面。</p>
-<blockquote>
-<p>CyclicBarrier好比一扇门，默认情况下关闭状态，堵住了线程执行的道路，直到所有线程都就位，门才打开，让所有线程一起通过。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">CyclicBarrier barrier = <span class="keyword">new</span> CyclicBarrier(<span class="number">3</span>, <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;run application&quot;</span>);		<span class="comment">//主任务</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">Runnable runnable = <span class="keyword">new</span> Runnable() &#123;				<span class="comment">//子任务</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName());</span><br><span class="line">            barrier.await();						<span class="comment">//子任务中await一次CyclicBarrier</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (BrokenBarrierException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(runnable,<span class="string">&quot;Thread&quot;</span>+i).start();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">100</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="读写锁ReadWriteLock"><a href="#读写锁ReadWriteLock" class="headerlink" title="读写锁ReadWriteLock"></a>读写锁ReadWriteLock</h2><p>对于一些读操作频繁而写操作不频繁的业务来说有巨大的性能提升。由ReentrantReadWriteLock类提供。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    ReentrantReadWriteLock readWriteLock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line">    Lock readLock = readWriteLock.readLock();</span><br><span class="line">    Lock writeLock = readWriteLock.writeLock();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(()-&gt;read(readLock)).start();		<span class="comment">//这里传入readLock就会迅速执行完毕，若传入lock则会有漫长的等待</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">new</span>  Thread(()-&gt;write(writeLock)).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">(Lock lock)</span> </span>&#123;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;read&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(Lock lock)</span> </span>&#123;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;write&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="semaphore"><a href="#semaphore" class="headerlink" title="semaphore"></a>semaphore</h2><p>可以用来【限流】。</p>
-<p>无论有多少个线程活跃着，能运行的（获取到锁）只有permits限定的这么多个。每次acquire就会使得permits减一，每次release就会加一。</p>
-<p>可以形象地理解成车道和收费站的关系。</p>
-
+        <p>笔记Part3</p>
+        
+          <a class="article-more-a" href="/archives/ae0362dd.html#more">more >></a>
+        
       
 
       
@@ -1006,31 +769,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<h2 id="volatile作用："><a href="#volatile作用：" class="headerlink" title="volatile作用："></a>volatile作用：</h2><ul>
-<li>保证线程可见性 </li>
-<li>禁止指令重排序</li>
-</ul>
-<p>单例模式，懒汉生成法，要保证线程安全【双重检查】：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> test INSTANCE; <span class="comment">//要加volatile，原因解释在下方</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">test</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(INSTANCE==<span class="keyword">null</span>)&#123;	<span class="comment">//判断的时候先不加锁</span></span><br><span class="line">            <span class="keyword">synchronized</span> (test.class)&#123;</span><br><span class="line">                <span class="keyword">if</span>(INSTANCE==<span class="keyword">null</span>)&#123;	<span class="comment">//上一次判断后，要加锁，在new之前，看看在此期间是否有被别的线程抢占了锁并已经new出来了对象</span></span><br><span class="line">                    INSTANCE=<span class="keyword">new</span> test();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> INSTANCE;	<span class="comment">//返回单例</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">someFunctions</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;some functions.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;<span class="number">100</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">                System.out.println(test.getInstance().hashcode());</span><br><span class="line">            &#125;).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="问题：双重检查写法的单例模式是否要加volatile？"><a href="#问题：双重检查写法的单例模式是否要加volatile？" class="headerlink" title="问题：双重检查写法的单例模式是否要加volatile？"></a>问题：双重检查写法的单例模式是否要加volatile？</h2><p>答案：<strong>要的</strong>。</p>
-<p>INSTANCE=new test();这一句话在JVM中有三个步骤：1. 申请内存（带有默认值）。2. 设置成员的值。3. 让引用指向内存的地址。</p>
-<p>在不加volatile的情况下，上述的第2第3个步骤可能会进行指令重排，也就是：申请内存-&gt;引用指向内存地址-&gt;设置成员的值。</p>
-<p>在超高并发的场景下，线程A在new的过程中申请了带有默认值的内存，并把引用指向了该地址，还没来得及修改成员的值。此时线程B查看INSTANCE不为空，直接返回该单例并使用。在这种情况下，线程B拿到的成员的值是不对的，因为线程A还没有正确地初始化它。</p>
-<p>加了volatile之后指令重排序不被允许，那么线程A在new的过程中就可以保证成员的值被正确初始化后才赋值给引用，就不会出现上述的问题了。</p>
-<p><strong>结论：双重检查写法的单例模式要加volatile</strong>。</p>
-<hr>
-<h2 id="synchronized优化"><a href="#synchronized优化" class="headerlink" title="synchronized优化"></a>synchronized优化</h2><p>锁的细化，只加在需要锁的那部分代码。</p>
-<p>如果synchronized对某个对象进行锁，那么建议那个对象添加修饰词final，以避免出现对象引用变化的情况。</p>
-<p>不要用String类型来作为锁的对象。</p>
-<hr>
-<h2 id="CAS-compare-and-swap-set"><a href="#CAS-compare-and-swap-set" class="headerlink" title="CAS compare and swap/set"></a>CAS compare and swap/set</h2><p>无锁优化 或者叫 <strong>乐观锁</strong>。</p>
-<p>AtomicInteger可以实现。</p>
-<p><strong>ABA问题</strong>解决：加版本号。修改一次版本号加一，检查的时候包括值本身和版本号。AtomicStampedReference类可以做到。</p>
-<p>其实对于基本数据类型并没有问题，对于引用类型需要留意。</p>
-
+        <p>笔记Part2</p>
+        
+          <a class="article-more-a" href="/archives/d904524b.html#more">more >></a>
+        
       
 
       
@@ -1130,47 +872,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-
-<h2 id="启动线程的3种方法："><a href="#启动线程的3种方法：" class="headerlink" title="启动线程的3种方法："></a>启动线程的3种方法：</h2><ul>
-<li><p>继承Thread并重写run方法</p>
-</li>
-<li><p>实现Runnable接口并重写run方法</p>
-</li>
-<li><p>通过lambda方法来启动   或者   通过线程池Executor.newCachedThread来进行启动线程</p>
-</li>
-</ul>
-<hr>
-<h2 id="进程-线程-协程"><a href="#进程-线程-协程" class="headerlink" title="进程 线程 协程"></a>进程 线程 协程</h2><p>线程是进程的最小执行单元</p>
-<p>一个程序里不同的执行路径可以理解为线程</p>
-<hr>
-<h2 id="yield"><a href="#yield" class="headerlink" title="yield"></a>yield</h2><p>让出CPU并进入等待状态</p>
-<h2 id="join"><a href="#join" class="headerlink" title="join"></a>join</h2><p>t1线程里面调用t2.join()，会去执行t2，搞定之后回来继续执行t1</p>
-<hr>
-<h2 id="线程状态"><a href="#线程状态" class="headerlink" title="线程状态"></a>线程状态</h2><p><img src="https://user-images.githubusercontent.com/17522733/97427594-14dd7f00-1915-11eb-90a6-17b69d8f4f34.png" alt="多线程状态转移图 (1)"></p>
-<p>不要尝试去手动关闭线程，要让其正常结束</p>
-<p>出现异常的时候正常会释放锁，所以需要格外小心，以免一个线程的脏数据在异常后被另一个线程读到</p>
-<hr>
-<h2 id="synchronized的底层实现："><a href="#synchronized的底层实现：" class="headerlink" title="synchronized的底层实现："></a>synchronized的底层实现：</h2><p>JDK早期的时候是重量级的，需要调用OS的方法</p>
-<p>后来做了改进，<strong>锁升级</strong>的概念：</p>
-<ul>
-<li><p>如果当前只有一个线程想要对某个对象占用锁的话，直接在该对象的头部<strong>markword</strong>记录这个线程的ID，此为偏向锁。若同一把锁重入，就可以很方便地检查markword中记录的ID是否和自己一样，一样的话就直接执行，很快速方便。</p>
-</li>
-<li><p>如果有线程争用，则升级为<strong>自旋锁</strong>，等待的线程会反复查询该对象的锁是否已经被释放。</p>
-</li>
-<li><p>在自旋查询10次以后，升级为<strong>重量级锁</strong>，调用OS的方法，进入到等待队列中。这个线程就进入了等待状态，不占用CPU资源。</p>
-</li>
-</ul>
-<hr>
-<h2 id="什么时候使用自旋锁更好？"><a href="#什么时候使用自旋锁更好？" class="headerlink" title="什么时候使用自旋锁更好？"></a>什么时候使用自旋锁更好？</h2><p>自旋锁不会调用OS的方法，一直处于用户态而不进入内核态，但会占用CPU的资源</p>
-<p>因此对于执行时间长的任务建议使用OS锁，也就是synchronized。</p>
-<p>对于执行时间短的任务可以使用自旋锁，但是需要保证等待的任务数不能过多，否则会CPU会受不了。</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li>加锁的代码执行时间长，线程数多，使用重量级锁synchronized。  </li>
-<li>加锁的代码任务执行时间短，线程数少，使用自旋锁。</li>
-</ul>
-
+        <p>笔记Part1</p>
+        
+          <a class="article-more-a" href="/archives/400d03f1.html#more">more >></a>
+        
       
 
       

@@ -8,17 +8,17 @@
   <link rel="dns-prefetch" href="https://blog.yulin.cool">
   <title>多线程与高并发7 | 裕麟的blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="线程池 上层有Executor接口，中间有ExecutorService接口，下层有ThreadPoolExecutor类。  我们使用Callable接口可以定义类似于Runnable功能的任务，然后交给线程去执行。区别在于Callable具有返回值，而且其使用场景一般与线程池相关。 由于Callable提交给线程池之后的执行是相对主线程异步的，所以我们可以把Callable将来执行产生的结">
+  <meta name="description" content="笔记Part7">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多线程与高并发7">
 <meta property="og:url" content="https://blog.yulin.cool/archives/a96ea6c4.html">
 <meta property="og:site_name" content="裕麟的blog">
-<meta property="og:description" content="线程池 上层有Executor接口，中间有ExecutorService接口，下层有ThreadPoolExecutor类。  我们使用Callable接口可以定义类似于Runnable功能的任务，然后交给线程去执行。区别在于Callable具有返回值，而且其使用场景一般与线程池相关。 由于Callable提交给线程池之后的执行是相对主线程异步的，所以我们可以把Callable将来执行产生的结">
+<meta property="og:description" content="笔记Part7">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://user-images.githubusercontent.com/17522733/98050291-a6775000-1e31-11eb-9dcc-f977979dfd66.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/17522733/97914181-c6364780-1d4f-11eb-86b5-c25fbdf42045.png">
 <meta property="article:published_time" content="2020-09-23T10:05:10.000Z">
-<meta property="article:modified_time" content="2020-11-11T11:47:34.712Z">
+<meta property="article:modified_time" content="2020-11-11T11:57:37.995Z">
 <meta property="article:author" content="Yulin">
 <meta property="article:tag" content="JavaSE">
 <meta property="article:tag" content="多线程">
@@ -184,7 +184,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
+        <p>笔记Part7</p>
+<a id="more"></a>
 
 <h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><blockquote>
 <p>上层有Executor接口，中间有ExecutorService接口，下层有ThreadPoolExecutor类。</p>

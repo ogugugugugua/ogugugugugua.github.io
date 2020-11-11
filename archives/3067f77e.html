@@ -8,21 +8,21 @@
   <link rel="dns-prefetch" href="https://blog.yulin.cool">
   <title>多线程与高并发4 | 裕麟的blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="淘宝面试题1：实现一个容器，提供两个方法add size，写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数到5个时，线程2给出提示并结束  解法详解：  T01并不能用，因为线程1更改的内容对于线程2来说并不可见。 T02和T03本质上属于在T01基础上增加了volatile关键字，虽然可行但是很奇怪：volatile修饰的是指向内存地址的指针，而这个指针是不会随着">
+  <meta name="description" content="笔记Part4">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多线程与高并发4">
 <meta property="og:url" content="https://blog.yulin.cool/archives/3067f77e.html">
 <meta property="og:site_name" content="裕麟的blog">
-<meta property="og:description" content="淘宝面试题1：实现一个容器，提供两个方法add size，写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数到5个时，线程2给出提示并结束  解法详解：  T01并不能用，因为线程1更改的内容对于线程2来说并不可见。 T02和T03本质上属于在T01基础上增加了volatile关键字，虽然可行但是很奇怪：volatile修饰的是指向内存地址的指针，而这个指针是不会随着">
+<meta property="og:description" content="笔记Part4">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-09-17T10:05:10.000Z">
-<meta property="article:modified_time" content="2020-11-11T11:36:44.217Z">
+<meta property="article:modified_time" content="2020-11-11T11:57:13.477Z">
 <meta property="article:author" content="Yulin">
 <meta property="article:tag" content="JavaSE">
 <meta property="article:tag" content="多线程">
+<meta property="article:tag" content="JUC">
 <meta property="article:tag" content="面试题">
 <meta property="article:tag" content="AQS">
-<meta property="article:tag" content="JUC">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="裕麟的blog" type="application/atom+xml">
@@ -183,7 +183,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
+        <p>笔记Part4</p>
+<a id="more"></a>
 
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://github.com/ogugugugugua/Java-Notes/tree/2237b94422e32529f6a1825a3023975be95c560c/code/multiThread/src/com/interviewExercises/ex1">淘宝面试题1</a>：实现一个容器，提供两个方法add size，写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数到5个时，线程2给出提示并结束</p>
@@ -234,15 +235,15 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JUC</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">面试题</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">AQS</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JUC</a>
         		</li>
       		
 		</ul>
