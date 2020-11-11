@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Présentation personnelle en Français pour la recherche d&#39;un stage</title>
+      <link href="archives/9d758c05.html"/>
+      <url>archives/9d758c05.html</url>
+      
+        <content type="html"><![CDATA[<p>Présentation:</p><p>Bonjour, je suis Yulin XIE, je viens de la chine. Et je suis arrivé en France il y a un ans pour mes études d’ingénieur dans Polytech Nantes. Ma spécialité est informatique, maintenant  je me focalise principalement sur le développement Java, et aussi le javascript. </p><p>Pendant le confinement de cette année, j’ai dépensé beaucoup de temps à m’enrichir concernant plusieurs technique de développement; Afin de mettre en pratique les théories, j’ai développé un site é-commerce en utilisant les Framework liés à Spring. Vous pouvez cliquer le lien pour voir ce qu’il y a dedans, désolé pour l’instant c’est seulement en chinois mais je vais bientôt faire l’internationalisation pour que tout le monde puisse comprendre. </p><p>En plus de cet projet personnel, j’ai aussi fait quelque projets quand j’étais en chine et aussi un projet transversal ici en France. </p><p>Le projet transversal a été fait en collaboration avec un ancien élève de Polytech Nantes, l’objective est de mettre en place un démo de classification des mails pour vérifier la fonctionnalité d’une interface de développement en intélligence artificielle qui s’appelle Hyperplan. Je m’occupe de la partie de l’implémentation des algos de classification, dans laquelle j’ai implémenté trois solutions de différents niveaux. En plus, on a fourni des retours pour l’amélioration de l’interface.</p><p>Pour les trois méthodes de classification, tout d’abord c’est un algo qui s’appelle TF-IDF, ou bien term frequency–inverse document frequency. Une technique de la récupération d’informations et exploration de données,largement utilisé pour trouver des mots clés dans un article. Le deuxième est le k-means, un algo de machine learning non supervisé pour catégoriser les étiquettes des articles. Et enfin le textCNN, un algo de deep learning supervisé pour classifier les texte en utilisant le réseau de neurone convolutionelle. </p><p>Pour la durée du stage, je serai disponible à partir de 18 février et jusqu’à fin aout. Et je dépose une voiture ici donc il n’y a pas de soucis concernant les mobilisation de Nantes à Rennes. </p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Français </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Français </tag>
+            
+            <tag> stage </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>多线程与高并发8</title>
       <link href="archives/39d1bb55.html"/>
       <url>archives/39d1bb55.html</url>
@@ -246,6 +273,35 @@
             <tag> synchronized </tag>
             
             <tag> CAS </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>常用命令</title>
+      <link href="archives/6fc55794.html"/>
+      <url>archives/6fc55794.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><h2 id="windows下查看端口占用、杀死进程"><a href="#windows下查看端口占用、杀死进程" class="headerlink" title="windows下查看端口占用、杀死进程"></a>windows下查看端口占用、杀死进程</h2><p>查看占用端口号7900的进程：</p><a id="more"></a><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -aon|findstr <span class="string">&quot;7900&quot;</span></span><br></pre></td></tr></table></figure><p>得到PID号后（如6764），根据该PID杀死进程：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taskkill /f /pid  6764</span><br></pre></td></tr></table></figure><h2 id="Linux-CentOS下安装docker"><a href="#Linux-CentOS下安装docker" class="headerlink" title="Linux/CentOS下安装docker"></a>Linux/CentOS下安装docker</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun</span><br></pre></td></tr></table></figure><p>安装完有提示：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">If you would like to use Docker as a non-root user, you should now consider</span><br><span class="line">adding your user to the &quot;docker&quot; group with something like:</span><br><span class="line"></span><br><span class="line">  sudo usermod -aG docker your-user</span><br><span class="line"></span><br><span class="line">Remember that you will have to log out and back in for this to take effect!</span><br></pre></td></tr></table></figure><p>需要先启动docker：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start docker</span><br></pre></td></tr></table></figure><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker ps -as          #查看当前的所有container</span><br><span class="line"></span><br><span class="line">docker start $PID     #启动一个container</span><br><span class="line"></span><br><span class="line">docker attach $PID   #进入一个container</span><br><span class="line"></span><br><span class="line">sudo docker exec -ti [CONTAINER-ID] bash      #另一种进入container的方式</span><br></pre></td></tr></table></figure><p>使用<code>docker exec</code>命令之后如果想要退出：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl + c + ctrl + p + ctrl + q</span><br></pre></td></tr></table></figure><h2 id="使用SSH方式登录远程服务器访问某个端口并在浏览器查看访问结果"><a href="#使用SSH方式登录远程服务器访问某个端口并在浏览器查看访问结果" class="headerlink" title="使用SSH方式登录远程服务器访问某个端口并在浏览器查看访问结果"></a>使用SSH方式登录远程服务器访问某个端口并在浏览器查看访问结果</h2><p>对于某些dashboard等应用，其后端运行在远程的linux服务器上（如阿里云），这些服务器并没有图形化界面，所以我们需要使用本地的浏览器来访问远程的对应端口。需要进行以下配置：</p><ol><li><p>开启远程服务器的防火墙端口：</p><ol><li><p>安装防火墙：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install firewalld</span><br></pre></td></tr></table></figure></li><li><p>启动防火墙并开启其自动启动功能：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start firewalld</span><br><span class="line">sudo systemctl enable firewalld</span><br><span class="line">sudo systemctl status firewalld</span><br></pre></td></tr></table></figure></li><li><p>开启某个端口，比如8080，并刷新一下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent</span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure></li></ol></li><li><p>xshell连接设置相关规则：</p><p><img src="https://user-images.githubusercontent.com/17522733/95740659-3a1f8b80-0c8d-11eb-8dd2-17fcfd1c7597.png" alt="image-20201012131636338"></p><p>使用xshell建立隧道，把访问本地的端口变成访问服务器上的端口：右键自己的会话-&gt;属性-&gt;连接-&gt;ssh-&gt;隧道，添加规则。</p></li><li><p>访问本地服务器localhost:8080即可。</p></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 命令 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 命令 </tag>
+            
+            <tag> Windows </tag>
+            
+            <tag> Linux </tag>
             
         </tags>
       
