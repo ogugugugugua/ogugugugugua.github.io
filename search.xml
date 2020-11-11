@@ -173,11 +173,11 @@
             
             <tag> 多线程 </tag>
             
+            <tag> JUC </tag>
+            
             <tag> 面试题 </tag>
             
             <tag> AQS </tag>
-            
-            <tag> JUC </tag>
             
         </tags>
       
@@ -235,11 +235,11 @@
             
             <tag> 多线程 </tag>
             
-            <tag> volatile </tag>
-            
             <tag> synchronized </tag>
             
             <tag> CAS </tag>
+            
+            <tag> volatile </tag>
             
         </tags>
       
@@ -268,11 +268,11 @@
             
             <tag> 多线程 </tag>
             
+            <tag> 线程状态 </tag>
+            
             <tag> synchronized </tag>
             
             <tag> CAS </tag>
-            
-            <tag> 线程状态 </tag>
             
         </tags>
       
