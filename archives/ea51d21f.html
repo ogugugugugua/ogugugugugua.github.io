@@ -6,18 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://blog.yulin.cool">
-  <title>裕麟的blog</title>
+  <title>JMM笔记 | 裕麟的blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="华南理工大学信息工程本科+硕士，法国工程师文凭，后端技术分享">
-<meta property="og:type" content="website">
-<meta property="og:title" content="裕麟的blog">
-<meta property="og:url" content="https://blog.yulin.cool/index.html">
+  <meta name="description" content="Java内存模型。更准确说是“Java线程内存模型”。其与CPU缓存模型类似，是标准化的，屏蔽了底层不同计算机的区别。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JMM笔记">
+<meta property="og:url" content="https://blog.yulin.cool/archives/ea51d21f.html">
 <meta property="og:site_name" content="裕麟的blog">
-<meta property="og:description" content="华南理工大学信息工程本科+硕士，法国工程师文凭，后端技术分享">
+<meta property="og:description" content="Java内存模型。更准确说是“Java线程内存模型”。其与CPU缓存模型类似，是标准化的，屏蔽了底层不同计算机的区别。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://user-images.githubusercontent.com/17522733/93672081-6558f580-faa8-11ea-8eea-69497c849c2e.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/17522733/93671584-79025d00-faa4-11ea-91cf-2d876b2bebd9.png">
+<meta property="article:published_time" content="2020-10-28T11:05:10.000Z">
+<meta property="article:modified_time" content="2020-11-11T14:41:59.760Z">
 <meta property="article:author" content="Yulin">
-<meta property="article:tag" content="后端工程师">
+<meta property="article:tag" content="JMM">
+<meta property="article:tag" content="内存">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/17522733/93672081-6558f580-faa8-11ea-8eea-69497c849c2e.png">
   
     <link rel="alternative" href="/atom.xml" title="裕麟的blog" type="application/atom+xml">
   
@@ -157,16 +163,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-JMM" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-JMM" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/ea51d21f.html">JMM笔记</a>
+    <h1 class="article-title" itemprop="name">
+      JMM笔记
     </h1>
   
 
@@ -180,9 +184,72 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="Java内存模型。"><a href="#Java内存模型。" class="headerlink" title="Java内存模型。"></a>Java内存模型。</h2><p>更准确说是“<strong>Java线程内存模型</strong>”。其与CPU缓存模型类似，是标准化的，屏蔽了底层不同计算机的区别。</p>
-        
-          <a class="article-more-a" href="/archives/ea51d21f.html#more">more >></a>
-        
+<a id="more"></a>
+
+<p><img src="https://user-images.githubusercontent.com/17522733/93672081-6558f580-faa8-11ea-8eea-69497c849c2e.png" alt="未命名文件 (7)"></p>
+<p>这里牵涉到一个可见性问题，每一个线程都会在主内存中获取一个所需内容的副本，用于自己线程。那么不同的线程之间就会可能出现各自工作内存中同一对象的值不一致问题。</p>
+<h3 id="我们可以对这个现象进行一个模拟："><a href="#我们可以对这个现象进行一个模拟：" class="headerlink" title="我们可以对这个现象进行一个模拟："></a>我们可以对这个现象进行一个模拟：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution1</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;							<span class="comment">//线程A</span></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;Waiting&quot;</span>);</span><br><span class="line">                <span class="keyword">while</span> (!flag)&#123;&#125;</span><br><span class="line">                System.out.println(<span class="string">&quot;End waiting....&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);								    <span class="comment">//确保线程A已经启动</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;							<span class="comment">//线程B</span></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                flag = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而在控制台处的输出：</p>
+<blockquote>
+<p>Waiting</p>
+</blockquote>
+<p>可见在线程A中的while循环并没有停止，尽管flag的值在表面上已经被线程B修改成了true。</p>
+<p>因此需要在flag前面加上<strong>volatile</strong>修饰，表示该共享变量在多个线程的工作内存之间的可见性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br></pre></td></tr></table></figure>
+
+<p>此时的控制台输出就会和预想的一样：</p>
+<blockquote>
+<p>Waiting</p>
+<p>End waiting….</p>
+</blockquote>
+<h2 id="JMM数据原子操作"><a href="#JMM数据原子操作" class="headerlink" title="JMM数据原子操作"></a>JMM数据原子操作</h2><table>
+<thead>
+<tr>
+<th align="center">操作类型</th>
+<th align="center">解析</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">read（读取）</td>
+<td align="center">从主内存读取数据</td>
+</tr>
+<tr>
+<td align="center">load（载入）</td>
+<td align="center">将主内存读取到的数据写入工作内存</td>
+</tr>
+<tr>
+<td align="center">use（使用）</td>
+<td align="center">从工作内存读取数据来计算</td>
+</tr>
+<tr>
+<td align="center">assign（赋值）</td>
+<td align="center">将计算好的值重新赋值到工作内存中</td>
+</tr>
+<tr>
+<td align="center">store（存储）</td>
+<td align="center">将工作内存数据写入主内存</td>
+</tr>
+<tr>
+<td align="center">write（写入）</td>
+<td align="center">将store过去的变量值赋值给主内存中的变量</td>
+</tr>
+<tr>
+<td align="center">lock（锁定）</td>
+<td align="center">将主内存变量加锁，标识为线程独占状态</td>
+</tr>
+<tr>
+<td align="center">unlock（解锁）</td>
+<td align="center">将主内存变量解锁，解锁后其他线程可以锁定该变量</td>
+</tr>
+</tbody></table>
+<p><img src="https://user-images.githubusercontent.com/17522733/93671584-79025d00-faa4-11ea-91cf-2d876b2bebd9.png" alt="未命名文件 (5)"></p>
+<h2 id="JMM缓存不一致问题"><a href="#JMM缓存不一致问题" class="headerlink" title="JMM缓存不一致问题"></a>JMM缓存不一致问题</h2><p><strong>总线加锁（性能太低，已弃用）</strong>：CPU从主内存读取数据到告诉缓存，会在总线对这个数据加锁，直到用完释放锁之后其他CPU才能访问该数据。本质上已经把并行操作变成了串行操作。</p>
+<p><strong>MESI缓存一致性协议</strong>：多个CPU从主内存读取同一个数据到各自的高速缓存，当其中某个CPU修改了缓存里的数据，该数据会马上同步回主内存，其他<strong>CPU通过总线嗅探机制</strong>可以感知到数据的变化从而将自己缓存里的数据失效。（如上图）</p>
+<h2 id="Volatile可见性底层实现原理"><a href="#Volatile可见性底层实现原理" class="headerlink" title="Volatile可见性底层实现原理"></a>Volatile可见性底层实现原理</h2><p>底层实现主要是通过汇编lock前缀指令，其会锁定这块内存区域的缓存（缓存行锁定）并回写到主内存。这种回写是马上实现的，能保证实时性。</p>
+<p>并发编程三大特性：可见性，原子性，有序性</p>
+<p>volatile保证可见性和有序性，但是不保证原子性。保证原子性需要借助synchronized这样的锁机制。其不保证原子性的原因就在于JMM模型的机制，每个线程有独立的高速缓存，在不加锁的情况下，同时对同一对象进行修改，就会导致缓存不一致的问题。</p>
+
       
 
       
@@ -219,16 +286,24 @@
 
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/ea51d21f.html">展开全文 >></a>
-        </p>
-      
 
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/archives/cb80ff62.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">JVM笔记</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -243,903 +318,32 @@
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-JVM" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/cb80ff62.html">JVM笔记</a>
-    </h1>
-  
-
-        
-        <a href="/archives/cb80ff62.html" class="archive-article-date">
-  	<time datetime="2020-10-25T11:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="常见面试题："><a href="#常见面试题：" class="headerlink" title="常见面试题："></a>常见面试题：</h2><ol>
-<li>请谈谈对JVM的理解？java8虚拟机和之前的变化更新？</li>
-<li>什么是OOM？什么是栈溢出StackOverFlowError？怎么分析？</li>
-<li>JVM的常用调优参数有哪些？</li>
-<li>内存快照如何抓取？怎么分析Dump文件？</li>
-<li>谈谈JVM中，类加载器的认识？</li>
-</ol>
-        
-          <a class="article-more-a" href="/archives/cb80ff62.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JVM</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">堆栈</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">面试题</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/JVM//" class="article-tag-list-link color4">JVM</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/cb80ff62.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E3%80%82"><span class="toc-number">1.</span> <span class="toc-text">Java内存模型。</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%AF%B9%E8%BF%99%E4%B8%AA%E7%8E%B0%E8%B1%A1%E8%BF%9B%E8%A1%8C%E4%B8%80%E4%B8%AA%E6%A8%A1%E6%8B%9F%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">我们可以对这个现象进行一个模拟：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JMM%E6%95%B0%E6%8D%AE%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text">JMM数据原子操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JMM%E7%BC%93%E5%AD%98%E4%B8%8D%E4%B8%80%E8%87%B4%E9%97%AE%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">JMM缓存不一致问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Volatile%E5%8F%AF%E8%A7%81%E6%80%A7%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">Volatile可见性底层实现原理</span></a></li></ol>
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
-
-  
-    <article id="post-java集合类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/aef82664.html">Java集合类</a>
-    </h1>
-  
-
-        
-        <a href="/archives/aef82664.html" class="archive-article-date">
-  	<time datetime="2020-10-17T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>摘要：Collection类，StringBuilder和StringBuffer，HashMap原理，HashMap源码</p>
-        
-          <a class="article-more-a" href="/archives/aef82664.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">HashMap</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Collection</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/JavaSE//" class="article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/aef82664.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Présentation" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/9d758c05.html">Présentation personnelle en Français pour la recherche d&#39;un stage en 2021</a>
-    </h1>
-  
-
-        
-        <a href="/archives/9d758c05.html" class="archive-article-date">
-  	<time datetime="2020-10-01T10:12:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Présentation:</p>
-<p>Bonjour, je suis Yulin XIE, je viens de la Chine. Et je suis arrivé en France il y a un ans pour mes études d’ingénieur dans Polytech Nantes. Ma spécialité est informatique, maintenant  je me focalise principalement sur le développement Java, et aussi le javascript. </p>
-        
-          <a class="article-more-a" href="/archives/9d758c05.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Français</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">stage</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Francais//" class="article-tag-list-link color4">Français</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/9d758c05.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多线程与高并发8" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/39d1bb55.html">多线程与高并发8</a>
-    </h1>
-  
-
-        
-        <a href="/archives/39d1bb55.html" class="archive-article-date">
-  	<time datetime="2020-09-25T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>摘要：Executors，ThreadPoolExecutors源码，ForkPoolJoin</p>
-        
-          <a class="article-more-a" href="/archives/39d1bb55.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">线程池</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/多线程//" class="article-tag-list-link color4">多线程</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/39d1bb55.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多线程与高并发7" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/a96ea6c4.html">多线程与高并发7</a>
-    </h1>
-  
-
-        
-        <a href="/archives/a96ea6c4.html" class="archive-article-date">
-  	<time datetime="2020-09-23T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>摘要：线程池图解，FutureTask，ThreadPoolExecutor</p>
-        
-          <a class="article-more-a" href="/archives/a96ea6c4.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">线程池</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/多线程//" class="article-tag-list-link color4">多线程</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/a96ea6c4.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多线程与高并发6" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/de699652.html">多线程与高并发6</a>
-    </h1>
-  
-
-        
-        <a href="/archives/de699652.html" class="archive-article-date">
-  	<time datetime="2020-09-21T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>摘要：容器，阻塞队列，源码解析</p>
-        
-          <a class="article-more-a" href="/archives/de699652.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Java容器</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">阻塞队列</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/多线程//" class="article-tag-list-link color4">多线程</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/de699652.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多线程与高并发5" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/4760c7e8.html">多线程与高并发5</a>
-    </h1>
-  
-
-        
-        <a href="/archives/4760c7e8.html" class="archive-article-date">
-  	<time datetime="2020-09-19T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>摘要：ThreadLocal，Java引用类型</p>
-        
-          <a class="article-more-a" href="/archives/4760c7e8.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">ThreadLocal</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Java引用</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/多线程//" class="article-tag-list-link color4">多线程</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/4760c7e8.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多线程与高并发4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/3067f77e.html">多线程与高并发4</a>
-    </h1>
-  
-
-        
-        <a href="/archives/3067f77e.html" class="archive-article-date">
-  	<time datetime="2020-09-17T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>摘要：面试题，Condition，AQS</p>
-        
-          <a class="article-more-a" href="/archives/3067f77e.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">面试题</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JUC</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">AQS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/多线程//" class="article-tag-list-link color4">多线程</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/3067f77e.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多线程与高并发3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/archives/ae0362dd.html">多线程与高并发3</a>
-    </h1>
-  
-
-        
-        <a href="/archives/ae0362dd.html" class="archive-article-date">
-  	<time datetime="2020-09-15T10:05:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>摘要：LongAdder ，ReentrantLock，CyclicBarrier，读写锁ReadWriteLock，semaphore</p>
-        
-          <a class="article-more-a" href="/archives/ae0362dd.html#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JavaSE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JUC</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/多线程//" class="article-tag-list-link color4">多线程</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/archives/ae0362dd.html">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -1162,8 +366,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

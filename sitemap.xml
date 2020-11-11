@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.yulin.cool/archives/aef82664.html</loc>
+    
+    <lastmod>2020-11-11</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/archives/ea51d21f.html</loc>
+    
+    <lastmod>2020-11-11</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.yulin.cool/archives/cb80ff62.html</loc>
     
     <lastmod>2020-11-11</lastmod>
@@ -221,6 +235,20 @@
   </url>
   
   <url>
+    <loc>https://blog.yulin.cool/tags/JMM/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/%E5%86%85%E5%AD%98/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blog.yulin.cool/tags/IO/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
@@ -285,6 +313,27 @@
   
   <url>
     <loc>https://blog.yulin.cool/tags/%E5%91%BD%E4%BB%A4/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/HashMap/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/Collection/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/%E6%BA%90%E7%A0%81/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -375,13 +424,6 @@
   </url>
   
   <url>
-    <loc>https://blog.yulin.cool/tags/%E6%BA%90%E7%A0%81/</loc>
-    <lastmod>2020-11-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.yulin.cool/tags/Windows/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
@@ -396,6 +438,13 @@
   </url>
   
   <url>
+    <loc>https://blog.yulin.cool/tags/hexo/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blog.yulin.cool/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
@@ -404,13 +453,6 @@
   
   <url>
     <loc>https://blog.yulin.cool/tags/%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2020-11-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.yulin.cool/tags/hexo/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -434,6 +476,13 @@
   
   <url>
     <loc>https://blog.yulin.cool/categories/JVM/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/categories/JMM/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
