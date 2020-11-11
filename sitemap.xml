@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.yulin.cool/archives/46eab5cb.html</loc>
+    
+    <lastmod>2020-11-11</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.yulin.cool/archives/39d1bb55.html</loc>
     
     <lastmod>2020-11-11</lastmod>
@@ -277,28 +284,7 @@
   </url>
   
   <url>
-    <loc>https://blog.yulin.cool/tags/volatile/</loc>
-    <lastmod>2020-11-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.yulin.cool/tags/JUC/</loc>
-    <lastmod>2020-11-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.yulin.cool/tags/ThreadLocal/</loc>
-    <lastmod>2020-11-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.yulin.cool/tags/Java%E5%BC%95%E7%94%A8/</loc>
+    <loc>https://blog.yulin.cool/tags/%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -313,6 +299,34 @@
   
   <url>
     <loc>https://blog.yulin.cool/tags/AQS/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/JUC/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/volatile/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/ThreadLocal/</loc>
+    <lastmod>2020-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yulin.cool/tags/Java%E5%BC%95%E7%94%A8/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -341,13 +355,6 @@
   
   <url>
     <loc>https://blog.yulin.cool/tags/%E6%BA%90%E7%A0%81/</loc>
-    <lastmod>2020-11-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.yulin.cool/tags/%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2020-11-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>hexo博客的备份</title>
+      <link href="archives/46eab5cb.html"/>
+      <url>archives/46eab5cb.html</url>
+      
+        <content type="html"><![CDATA[<p>新建博文</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hexo n &quot;name_of_file&quot;</span><br></pre></td></tr></table></figure><p>清空数据库旧记录</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hexo clean</span><br></pre></td></tr></table></figure><p>生成新记录</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hexo g</span><br></pre></td></tr></table></figure><p>把生成的页面推送上去GitHub</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hexo d</span><br></pre></td></tr></table></figure><hr><p>把源文件也推送上去GitHub：</p><p>在根目录下进行Git初始化</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure><p><strong>创建源文件分支，命名为blog，用来存放源码【重点】</strong></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b blog</span><br></pre></td></tr></table></figure><p>文件添加 并 提交</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add.</span><br><span class="line">git commit -m &#x27;backup&#x27;</span><br></pre></td></tr></table></figure><p>添加远程仓库</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin git@github.com:UserName/UserName.github.io.git</span><br></pre></td></tr></table></figure><p>push到blog分支</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin blog</span><br></pre></td></tr></table></figure><p>相关连接：</p><ul><li><a href="https://www.yansheng.xyz/article/b4e9a9a2.html">参考链接</a>1</li><li><a href="https://blog.csdn.net/zk673820543/article/details/52698760">参考链接</a>2</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Hexo </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Hexo </tag>
+            
+            <tag> 命令 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Présentation personnelle en Français pour la recherche d&#39;un stage en 2021</title>
       <link href="archives/9d758c05.html"/>
       <url>archives/9d758c05.html</url>
@@ -173,11 +200,11 @@
             
             <tag> 多线程 </tag>
             
-            <tag> JUC </tag>
-            
             <tag> 面试题 </tag>
             
             <tag> AQS </tag>
+            
+            <tag> JUC </tag>
             
         </tags>
       
