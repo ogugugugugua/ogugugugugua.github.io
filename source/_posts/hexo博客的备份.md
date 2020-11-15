@@ -5,8 +5,12 @@ tags:
   - 命令
 categories: Hexo
 abbrlink: 46eab5cb
-date: 2020-11-11 15:13:54
+date: 2020-07-11 15:13:54
 ---
+
+相关的hexo仓库备份策略，用于多地同时编辑及备份
+
+<!-- more -->
 
 新建博文
 
